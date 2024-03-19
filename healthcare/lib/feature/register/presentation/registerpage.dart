@@ -1,4 +1,4 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -11,10 +11,6 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
-    FirebaseDatabase database = FirebaseDatabase.instance;
-
-    print(database.databaseURL);
-
     super.initState();
   }
 
@@ -32,8 +28,25 @@ class _RegisterPageState extends State<RegisterPage> {
           bottom: 30,
         ),
         width: screenWidth,
-        child: const SingleChildScrollView(
-          child: Column(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextButton(
+                onPressed: () async {
+                  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+                  Map<String, dynamic> data = {
+                    "name": "Suruch",
+                    "age": 20,
+                    "subject": "Math",
+                  };
+
+                  await firestore.collection("Students").add(data);
+                },
+                child: Text("Click"),
+              )
+            ],
+          ),
         ),
       ),
     );
