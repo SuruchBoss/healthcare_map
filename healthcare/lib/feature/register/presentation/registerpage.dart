@@ -22,6 +22,67 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   });
 
+  void _showRegisterDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Register Confirmation',
+            style: TextStyle(
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+              'Dear, Mr./Miss/Mrs. ${nameController.text} ${lastNameController.text}, Do you want to register as a new user?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Confirm'),
+              onPressed: () => _handleRegistration(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Incomplete registration',
+            style: TextStyle(
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text('Please fill out the blank data'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Confirm'),
+              onPressed: () => _handleRegistration(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -31,12 +92,14 @@ class _RegisterPageState extends State<RegisterPage> {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     Map<String, dynamic> data = {
-      "name": "Suruch",
-      "age": 20,
-      "subject": "Math",
+      "name": nameController.text,
+      "lastName": lastNameController.text,
+      "age": selectedAge!,
+      "weight": weightController.text,
+      "heigh": heighController.text,
     };
 
-    await firestore.collection("Students").add(data);
+    await firestore.collection("Customers").add(data);
   }
 
   @override
@@ -188,14 +251,24 @@ class _RegisterPageState extends State<RegisterPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       TextButton(
-                        onPressed: () => null,
+                        onPressed: () {
+                          if (nameController.text.isNotEmpty &&
+                              lastNameController.text.isNotEmpty &&
+                              selectedAge != null &&
+                              weightController.text.isNotEmpty &&
+                              heighController.text.isNotEmpty) {
+                            _showRegisterDialog(context);
+                          } else {
+                            _showErrorDialog(context);
+                          }
+                        },
                         style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: const Size(50, 30),
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             alignment: Alignment.centerLeft),
                         child: const Text(
-                          "Login",
+                          "Register",
                           style: TextStyle(
                             fontSize: 21,
                             color: Colors.blueAccent,
@@ -204,7 +277,15 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () => null,
+                        onPressed: () {
+                          setState(() {
+                            nameController.text = '';
+                            lastNameController.text = '';
+                            selectedAge = null;
+                            weightController.text = '';
+                            heighController.text = '';
+                          });
+                        },
                         style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: const Size(50, 30),
