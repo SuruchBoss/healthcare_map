@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -12,8 +13,11 @@ class _RegisterPageState extends State<RegisterPage> {
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();
   int? selectedAge;
-  final heighController = TextEditingController();
-  final weightController = TextEditingController();
+  final userNameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  final iv = encrypt.IV.fromLength(16);
+  final encrypter = encrypt.Encrypter(encrypt.AES(encrypt.Key.fromLength(32)));
 
   List<DropdownMenuItem<int>> ageItems = List.generate(91, (int index) {
     return DropdownMenuItem(
@@ -45,7 +49,11 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             TextButton(
               child: const Text('Confirm'),
-              onPressed: () => _handleRegistration(),
+              onPressed: () {
+                _handleRegistration();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
             ),
           ],
         );
@@ -68,14 +76,10 @@ class _RegisterPageState extends State<RegisterPage> {
           content: const Text('Please fill out the blank data'),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: const Text('Ok'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
-            ),
-            TextButton(
-              child: const Text('Confirm'),
-              onPressed: () => _handleRegistration(),
             ),
           ],
         );
@@ -95,8 +99,8 @@ class _RegisterPageState extends State<RegisterPage> {
       "name": nameController.text,
       "lastName": lastNameController.text,
       "age": selectedAge!,
-      "weight": weightController.text,
-      "heigh": heighController.text,
+      "username": userNameController.text,
+      "password": encrypter.encrypt(passwordController.text, iv: iv).base64,
     };
 
     await firestore.collection("Customers").add(data);
@@ -144,6 +148,33 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 30),
+                  SizedBox(
+                    width: 300,
+                    child: TextField(
+                      controller: userNameController,
+                      keyboardType: TextInputType.name,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'User Name',
+                        hintText: 'User Name',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: 300,
+                    child: TextField(
+                      controller: passwordController,
+                      keyboardType: TextInputType.name,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Password',
+                        hintText: 'Password',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   SizedBox(
                     width: 300,
                     child: TextField(
@@ -198,55 +229,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Weight: ",
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 220,
-                        child: TextField(
-                          controller: weightController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Weight',
-                            hintText: 'Weight',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Height: ",
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 220,
-                        child: TextField(
-                          controller: heighController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Heigh',
-                            hintText: 'Heigh',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 110),
+                  const SizedBox(height: 90),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -255,8 +238,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           if (nameController.text.isNotEmpty &&
                               lastNameController.text.isNotEmpty &&
                               selectedAge != null &&
-                              weightController.text.isNotEmpty &&
-                              heighController.text.isNotEmpty) {
+                              userNameController.text.isNotEmpty &&
+                              passwordController.text.isNotEmpty) {
                             _showRegisterDialog(context);
                           } else {
                             _showErrorDialog(context);
@@ -282,8 +265,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             nameController.text = '';
                             lastNameController.text = '';
                             selectedAge = null;
-                            weightController.text = '';
-                            heighController.text = '';
+                            userNameController.text = '';
+                            passwordController.text = '';
                           });
                         },
                         style: TextButton.styleFrom(
