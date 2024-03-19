@@ -1,8 +1,10 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: no_leading_underscores_for_local_identifiers, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:healthcare/feature/dashboard/presentation/dashboard.dart';
 import 'package:healthcare/feature/register/presentation/registerpage.dart';
+import 'package:healthcare/model/customermodel.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -14,6 +16,9 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
+
+  String error = '';
+  String documentId = '';
 
   void _goToRegister() {
     Navigator.push(
@@ -32,25 +37,43 @@ class _LandingPageState extends State<LandingPage> {
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot userDoc = querySnapshot.docs.first;
+      documentId = userDoc.id;
       return querySnapshot.docs.first;
     }
 
     return null;
   }
 
-  Future<bool> _handleLogin() async {
+  void _handleLogin() async {
     final userDoc = await findUserByUsername();
 
     if (userDoc != null) {
       final userData = userDoc.data() as Map<String, dynamic>;
       final storedPassword = userData['password'] as String;
+      final name = userData['name'] as String;
+      final lastName = userData['lastName'] as String;
+
+      CustomerModel model = CustomerModel(
+        id: documentId,
+        firstName: name,
+        lastName: lastName,
+      );
 
       if (storedPassword == passwordController.text) {
-        return true;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashBoard(
+              customer: model,
+            ),
+          ),
+        );
+        error = '';
       }
     }
 
-    return false;
+    error = 'Username of Password is incorrect.';
   }
 
   @override
@@ -122,18 +145,18 @@ class _LandingPageState extends State<LandingPage> {
               const SizedBox(
                 height: 20,
               ),
-              const Text(
-                '',
-                style: TextStyle(color: Colors.red),
+              Text(
+                error,
+                style: const TextStyle(color: Colors.red),
+              ),
+              const SizedBox(
+                height: 20,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   TextButton(
-                    onPressed: () async {
-                      bool isCorrect = await _handleLogin();
-
-                    },
+                    onPressed: () => _handleLogin(),
                     style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: const Size(50, 30),
@@ -153,6 +176,7 @@ class _LandingPageState extends State<LandingPage> {
                       setState(() {
                         userNameController.text = '';
                         passwordController.text = '';
+                        error = '';
                       });
                     },
                     style: TextButton.styleFrom(
