@@ -1,5 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/register/presentation/registerpage.dart';
 
@@ -21,6 +22,35 @@ class _LandingPageState extends State<LandingPage> {
         builder: (context) => const RegisterPage(),
       ),
     );
+  }
+
+  Future<DocumentSnapshot?> findUserByUsername() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection("Customers")
+        .where("username", isEqualTo: userNameController.text)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first;
+    }
+
+    return null;
+  }
+
+  Future<bool> _handleLogin() async {
+    final userDoc = await findUserByUsername();
+
+    if (userDoc != null) {
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final storedPassword = userData['password'] as String;
+
+      if (storedPassword == passwordController.text) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @override
@@ -65,7 +95,7 @@ class _LandingPageState extends State<LandingPage> {
                 width: screenWidth,
                 child: TextField(
                   controller: userNameController,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.name,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'user name',
@@ -80,6 +110,7 @@ class _LandingPageState extends State<LandingPage> {
                 width: screenWidth,
                 child: TextField(
                   controller: passwordController,
+                  obscureText: true,
                   keyboardType: TextInputType.text,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -99,7 +130,10 @@ class _LandingPageState extends State<LandingPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      bool isCorrect = await _handleLogin();
+
+                    },
                     style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: const Size(50, 30),
@@ -115,7 +149,12 @@ class _LandingPageState extends State<LandingPage> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => null,
+                    onPressed: () {
+                      setState(() {
+                        userNameController.text = '';
+                        passwordController.text = '';
+                      });
+                    },
                     style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: const Size(50, 30),

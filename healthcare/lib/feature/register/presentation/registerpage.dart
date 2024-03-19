@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -15,9 +14,6 @@ class _RegisterPageState extends State<RegisterPage> {
   int? selectedAge;
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
-
-  final iv = encrypt.IV.fromLength(16);
-  final encrypter = encrypt.Encrypter(encrypt.AES(encrypt.Key.fromLength(32)));
 
   List<DropdownMenuItem<int>> ageItems = List.generate(91, (int index) {
     return DropdownMenuItem(
@@ -100,7 +96,7 @@ class _RegisterPageState extends State<RegisterPage> {
       "lastName": lastNameController.text,
       "age": selectedAge!,
       "username": userNameController.text,
-      "password": encrypter.encrypt(passwordController.text, iv: iv).base64,
+      "password": passwordController.text,
     };
 
     await firestore.collection("Customers").add(data);
