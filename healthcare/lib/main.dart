@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:healthcare/feature/landingpage/presentation/landingpage.dart';
 import 'package:healthcare/firebase_options.dart';
 
-void main() {
-  _firebaseInit();
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _firebaseInit();
 
   runApp(const MyApp());
 }
 
-void _firebaseInit() async {
+Future<void> _firebaseInit() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
