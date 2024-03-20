@@ -36,6 +36,53 @@ class _SearchingPageState extends State<SearchingPage> {
     });
   }
 
+  List<String> generateTimeSlots() {
+    List<String> slots = [];
+    for (int hour = 7; hour <= 20; hour++) {
+      final String timeSlot =
+          '${hour.toString().padLeft(2, '0')}.00 - ${(hour + 1).toString().padLeft(2, '0')}.00';
+      slots.add(timeSlot);
+    }
+    return slots;
+  }
+
+  void showTimeSlotDialog(BuildContext context) {
+    List<String> timeSlots = generateTimeSlots();
+    String? selectedSlot = timeSlots.first;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Select a Time Slot"),
+          content: DropdownButton<String>(
+            value: selectedSlot,
+            isExpanded: true,
+            onChanged: (String? newValue) {
+              selectedSlot = newValue!;
+              // Update the UI or perform actions based on the selected time slot
+              Navigator.of(context).pop(); // Close the dialog after selection
+            },
+            items: timeSlots.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -98,37 +145,63 @@ class _SearchingPageState extends State<SearchingPage> {
               margin: const EdgeInsets.only(
                 top: 190,
               ),
-              child: Column(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isShow = !isShow;
-                        print(isShow);
-                      });
-                    },
-                    icon: Icon(
-                      Icons.search,
-                      color: Colors.teal,
-                      size: isShow ? 30 : 80.0,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          isShow = !isShow;
+                          print(isShow);
+                        });
+                      },
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.teal,
+                        size: isShow ? 30 : 80.0,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Searh Nearby Clinic",
-                    style: TextStyle(
-                      fontSize: isShow ? 13 : 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                    Text(
+                      "Searh Nearby Clinic",
+                      style: TextStyle(
+                        fontSize: isShow ? 13 : 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
                     ),
-                  ),
-                  isShow
-                      ? SizedBox(
-                          width: screenWidth,
-                          height: 500,
-                          child: const SearchList(),
-                        )
-                      : const SizedBox(),
-                ],
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(50, 1),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            alignment: Alignment.centerLeft),
+                        onPressed: () {
+                          setState(() {
+                            isShow = false;
+                          });
+                        },
+                        child: Text(
+                          "Clear",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    isShow
+                        ? SizedBox(
+                            width: screenWidth,
+                            height: 500,
+                            child: const SearchList(),
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
               ),
             )
           ],
