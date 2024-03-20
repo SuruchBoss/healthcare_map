@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/model/bookingmodel.dart';
+import 'package:healthcare/util/datetime.dart';
 
 import 'package:table_calendar/table_calendar.dart';
 
@@ -65,10 +66,14 @@ class _MyBookingPageState extends State<MyBookingPage> {
               itemCount: _selectedDayBookings.length,
               itemBuilder: (context, index) {
                 final booking = _selectedDayBookings[index];
+                String dateTime =
+                    formatDateTime(booking.dateTime.toLocal().toString());
+
+                print(booking.dateTime.toLocal());
                 return ListTile(
                   title: Text(booking.clinicName),
                   subtitle: Text(
-                    'Date: ${booking.dateTime.toLocal()}',
+                    'Date: $dateTime',
                     style: const TextStyle(fontSize: 12.0),
                   ),
                 );
