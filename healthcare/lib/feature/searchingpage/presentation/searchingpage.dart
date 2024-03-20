@@ -36,53 +36,6 @@ class _SearchingPageState extends State<SearchingPage> {
     });
   }
 
-  List<String> generateTimeSlots() {
-    List<String> slots = [];
-    for (int hour = 7; hour <= 20; hour++) {
-      final String timeSlot =
-          '${hour.toString().padLeft(2, '0')}.00 - ${(hour + 1).toString().padLeft(2, '0')}.00';
-      slots.add(timeSlot);
-    }
-    return slots;
-  }
-
-  void showTimeSlotDialog(BuildContext context) {
-    List<String> timeSlots = generateTimeSlots();
-    String? selectedSlot = timeSlots.first;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Select a Time Slot"),
-          content: DropdownButton<String>(
-            value: selectedSlot,
-            isExpanded: true,
-            onChanged: (String? newValue) {
-              selectedSlot = newValue!;
-              // Update the UI or perform actions based on the selected time slot
-              Navigator.of(context).pop(); // Close the dialog after selection
-            },
-            items: timeSlots.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -110,7 +63,7 @@ class _SearchingPageState extends State<SearchingPage> {
           children: [
             SizedBox(
               width: screenWidth,
-              height: 300,
+              height: 400,
               child: GoogleMap(
                 onMapCreated: _onMapCreated,
                 myLocationEnabled: true, // Shows the user's location on the map
@@ -143,7 +96,7 @@ class _SearchingPageState extends State<SearchingPage> {
                 bottom: 40,
               ),
               margin: const EdgeInsets.only(
-                top: 190,
+                top: 250,
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -152,7 +105,6 @@ class _SearchingPageState extends State<SearchingPage> {
                       onPressed: () {
                         setState(() {
                           isShow = !isShow;
-                          print(isShow);
                         });
                       },
                       icon: Icon(
@@ -201,6 +153,24 @@ class _SearchingPageState extends State<SearchingPage> {
                           )
                         : const SizedBox(),
                   ],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.only(
+                top: 60,
+                left: 20,
+                right: 20,
+                bottom: 30,
+              ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                  size: 30.0,
                 ),
               ),
             )

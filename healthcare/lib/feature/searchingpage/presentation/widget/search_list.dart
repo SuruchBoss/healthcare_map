@@ -69,7 +69,6 @@ class _SearchListState extends State<SearchList> {
                   child: const Text('OK'),
                   onPressed: () {
                     if (selectedSlot != null && selectedSlot!['available']) {
-                      print("Selected Time Slot: ${selectedSlot!['time']}");
                       selectTime = selectedSlot!['time'];
 
                       Navigator.of(context).pop(true);
