@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/dashboard/presentation/widget/clinic_history.dart';
+import 'package:healthcare/feature/dashboard/presentation/widget/clinic_promotion.dart';
 import 'package:healthcare/feature/landingpage/presentation/landingpage.dart';
 import 'package:healthcare/model/customermodel.dart';
 
@@ -172,7 +173,7 @@ class _DashBoardState extends State<DashBoard> {
               ),
               const SizedBox(height: 20),
               Divider(
-                height: 60,
+                height: 30,
                 thickness: 1,
                 indent: 30,
                 endIndent: 30,
@@ -180,13 +181,20 @@ class _DashBoardState extends State<DashBoard> {
               ),
               const SizedBox(height: 10),
               Text(
-                "Promoion",
+                "Promotion",
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.grey[850],
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: screenWidth,
+                height: 400,
+                child: const ClinicPromotion(),
+              ),
+              const SizedBox(height: 30),
             ],
           ),
         ),
