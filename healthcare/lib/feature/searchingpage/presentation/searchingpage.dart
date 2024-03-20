@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:healthcare/feature/searchingpage/presentation/widget/search_list.dart';
 
 class SearchingPage extends StatefulWidget {
   const SearchingPage({super.key});
@@ -11,57 +12,76 @@ class SearchingPage extends StatefulWidget {
 }
 
 class _SearchingPageState extends State<SearchingPage> {
+  bool isShow = false;
+
+  GoogleMapController? mapController;
+  Set<Marker> markers = Set();
+
+  final LatLng _center = const LatLng(13.746597, 100.539360);
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    setState(() {
+      markers.add(
+        Marker(
+          markerId: MarkerId(_center.toString()),
+          position: _center,
+          infoWindow: const InfoWindow(
+            title: 'My Location',
+            snippet: 'This is a snippet',
+          ),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeigh = MediaQuery.of(context).size.height;
 
-    GoogleMapController? mapController;
-    Set<Marker> markers = Set();
+    // Future<void> findRestaurantsNearby() async {
+    //   final String url =
+    //       'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_center.latitude},${_center.longitude}&radius=6000&type=clinic&key=AIzaSyCeFj39JniJzn8VkiJgLSva0JDSpwtrcX4';
 
-    const LatLng _center = LatLng(13.746597, 100.539360);
+    //   final response = await http.get(Uri.parse(url));
 
-    void _onMapCreated(GoogleMapController controller) {
-      mapController = controller;
-      setState(() {
-        markers.add(
-          Marker(
-            markerId: MarkerId(_center.toString()),
-            position: _center,
-            infoWindow: const InfoWindow(
-              title: 'My Location',
-              snippet: 'This is a snippet',
-            ),
-            icon: BitmapDescriptor.defaultMarker,
-          ),
-        );
-      });
-    }
+    //   if (response.statusCode == 200) {
+    //     final data = json.decode(response.body);
+
+    //     printLongString(data.toString());
+    //     print(data);
+    //   } else {
+    //     print('Failed to load restaurants');
+    //   }
+    // }
 
     return Scaffold(
       body: SizedBox(
         width: screenWidth,
-        height: 300,
         child: Stack(
           children: [
-            GoogleMap(
-              onMapCreated: _onMapCreated,
-              myLocationEnabled: true, // Shows the user's location on the map
-              myLocationButtonEnabled: false,
-              initialCameraPosition: const CameraPosition(
-                target: _center,
-                zoom: 11.0,
-              ),
-              markers: {
-                const Marker(
-                  markerId: MarkerId('Sydney'),
-                  position: _center,
+            SizedBox(
+              width: screenWidth,
+              height: 300,
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                myLocationEnabled: true, // Shows the user's location on the map
+                myLocationButtonEnabled: false,
+                initialCameraPosition: CameraPosition(
+                  target: _center,
+                  zoom: 11.0,
                 ),
-              },
+                markers: {
+                  Marker(
+                    markerId: const MarkerId('Thailand'),
+                    position: _center,
+                  ),
+                },
+              ),
             ),
             Container(
               width: screenWidth,
-              height: screenHeigh,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -76,10 +96,39 @@ class _SearchingPageState extends State<SearchingPage> {
                 bottom: 40,
               ),
               margin: const EdgeInsets.only(
-                top: 270,
+                top: 190,
               ),
               child: Column(
-                children: [],
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isShow = !isShow;
+                        print(isShow);
+                      });
+                    },
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.teal,
+                      size: isShow ? 30 : 80.0,
+                    ),
+                  ),
+                  Text(
+                    "Searh Nearby Clinic",
+                    style: TextStyle(
+                      fontSize: isShow ? 13 : 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                  isShow
+                      ? SizedBox(
+                          width: screenWidth,
+                          height: 500,
+                          child: const SearchList(),
+                        )
+                      : const SizedBox(),
+                ],
               ),
             )
           ],
