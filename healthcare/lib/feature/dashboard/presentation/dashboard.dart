@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:healthcare/feature/dashboard/presentation/widget/clinic_history.dart';
 import 'package:healthcare/feature/dashboard/presentation/widget/clinic_promotion.dart';
 import 'package:healthcare/feature/landingpage/presentation/landingpage.dart';
+import 'package:healthcare/feature/mybooking/presentation/mybookingpage.dart';
 import 'package:healthcare/feature/searchingpage/presentation/searchingpage.dart';
 import 'package:healthcare/model/customermodel.dart';
 
@@ -31,6 +32,15 @@ class _DashBoardState extends State<DashBoard> {
       context,
       MaterialPageRoute(
         builder: (context) => const SearchingPage(),
+      ),
+    );
+  }
+
+  void _goToMyBookingPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MyBookingPage(),
       ),
     );
   }
@@ -128,7 +138,7 @@ class _DashBoardState extends State<DashBoard> {
               ),
               const SizedBox(height: 20),
               TextButton(
-                onPressed: null,
+                onPressed: _goToMyBookingPage,
                 style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(50, 1),
