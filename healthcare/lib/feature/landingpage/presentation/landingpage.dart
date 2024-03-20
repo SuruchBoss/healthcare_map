@@ -89,6 +89,7 @@ class _LandingPageState extends State<LandingPage> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         width: screenWidth,
         color: Colors.white,
