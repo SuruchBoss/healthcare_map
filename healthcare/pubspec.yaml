@@ -28,6 +28,7 @@ flutter:
 
   assets:
   - assets/
+  - assets/clinic/
   # fonts:
   #   - family: Schyler
   #     fonts:

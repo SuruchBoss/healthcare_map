@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthcare/feature/dashboard/presentation/widget/clinic_history.dart';
 import 'package:healthcare/feature/landingpage/presentation/landingpage.dart';
 import 'package:healthcare/model/customermodel.dart';
 
@@ -36,6 +37,7 @@ class _DashBoardState extends State<DashBoard> {
       body: SizedBox(
         width: screenWidth,
         child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Column(
             children: [
               Container(
@@ -44,7 +46,7 @@ class _DashBoardState extends State<DashBoard> {
                     top: 90,
                     left: 10,
                     right: 10,
-                    bottom: 70,
+                    bottom: 40,
                   ),
                   color: Colors.green,
                   child: Row(
@@ -111,6 +113,78 @@ class _DashBoardState extends State<DashBoard> {
                       color: Colors.teal[900],
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: null,
+                style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(50, 1),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    alignment: Alignment.centerLeft),
+                child: Container(
+                  width: screenWidth,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                      image: const AssetImage("assets/booking_bg.png"),
+                      fit: BoxFit.cover,
+                    ),
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  padding: const EdgeInsets.only(
+                    top: 40,
+                    left: 20,
+                    right: 20,
+                    bottom: 40,
+                  ),
+                  margin: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                  ),
+                  child: Text(
+                    "My Booking",
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.teal[900],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 40),
+              Text(
+                "Previous clinic",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[850],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: screenWidth,
+                height: 100,
+                child: const ClinicHistory(),
+              ),
+              const SizedBox(height: 20),
+              Divider(
+                height: 60,
+                thickness: 1,
+                indent: 30,
+                endIndent: 30,
+                color: Colors.red[600],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "Promoion",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[850],
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
