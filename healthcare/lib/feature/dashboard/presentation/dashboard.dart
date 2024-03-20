@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/dashboard/presentation/widget/clinic_history.dart';
 import 'package:healthcare/feature/dashboard/presentation/widget/clinic_promotion.dart';
+import 'package:healthcare/feature/dashboard/presentation/widget/upcomingevent.dart';
 import 'package:healthcare/feature/landingpage/presentation/landingpage.dart';
 import 'package:healthcare/feature/mybooking/presentation/mybookingpage.dart';
 import 'package:healthcare/feature/searchingpage/presentation/searchingpage.dart';
@@ -176,7 +177,18 @@ class _DashBoardState extends State<DashBoard> {
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
+              Text(
+                "Upcoming appointment",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[850],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const UpcomingEventsWidget(),
+              const SizedBox(height: 30),
               Text(
                 "Previous clinic",
                 style: TextStyle(
