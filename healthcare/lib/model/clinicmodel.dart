@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ClinicModel {
   final String id;
   final String name;
@@ -16,4 +18,24 @@ class ClinicModel {
     required this.lon,
     this.imageUrl,
   });
+
+  factory ClinicModel.fromDocument(DocumentSnapshot doc) {
+    return ClinicModel(
+      id: doc.id,
+      name: doc['name'],
+      detail: doc['detail'],
+      phone: doc['phone'],
+      lat: doc['lat'],
+      lon: doc['lon'],
+      imageUrl: doc[
+          'imageUrl'], // This might need a null check depending on your data
+    );
+  }
+}
+
+Future<List<ClinicModel>> getClinics() async {
+  final QuerySnapshot snapshot =
+      await FirebaseFirestore.instance.collection('Clinics').get();
+
+  return snapshot.docs.map((doc) => ClinicModel.fromDocument(doc)).toList();
 }
