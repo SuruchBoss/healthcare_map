@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 
 class ClinicHistory extends StatelessWidget {
   const ClinicHistory({super.key});
+
+  void _goToMyBookingPage(BuildContext context, ClinicModel model) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClinicDetailPage(
+          model: model,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +35,10 @@ class ClinicHistory extends StatelessWidget {
               final model = clinics[index];
 
               return TextButton(
-                onPressed: null,
+                onPressed: () => _goToMyBookingPage(
+                  context,
+                  model,
+                ),
                 style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(50, 1),
