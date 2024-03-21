@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 
 class SearchList extends StatefulWidget {
@@ -24,6 +25,17 @@ class _SearchListState extends State<SearchList> {
             random.nextBool(), // Randomly mark some slots as unavailable
       };
     });
+  }
+
+  void _goToClinicDetailPage(BuildContext context, ClinicModel model) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClinicDetailPage(
+          model: model,
+        ),
+      ),
+    );
   }
 
   void showTimeSlotDialog(BuildContext context, ClinicModel model) {
@@ -130,7 +142,10 @@ class _SearchListState extends State<SearchList> {
 
               return Center(
                 child: TextButton(
-                  onPressed: null,
+                  onPressed: () => _goToClinicDetailPage(
+                    context,
+                    model,
+                  ),
                   style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
                       minimumSize: const Size(50, 1),

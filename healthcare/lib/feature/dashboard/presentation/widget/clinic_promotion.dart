@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 
 class ClinicPromotion extends StatelessWidget {
   const ClinicPromotion({super.key});
+
+  void _goToClinicDetailPage(BuildContext context, ClinicModel model) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClinicDetailPage(
+          model: model,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +38,10 @@ class ClinicPromotion extends StatelessWidget {
 
               return Center(
                 child: TextButton(
-                  onPressed: null,
+                  onPressed: () => _goToClinicDetailPage(
+                    context,
+                    model,
+                  ),
                   style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
                       minimumSize: const Size(50, 1),

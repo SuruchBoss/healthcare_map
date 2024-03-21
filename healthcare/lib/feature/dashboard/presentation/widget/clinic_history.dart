@@ -5,7 +5,7 @@ import 'package:healthcare/model/clinicmodel.dart';
 class ClinicHistory extends StatelessWidget {
   const ClinicHistory({super.key});
 
-  void _goToMyBookingPage(BuildContext context, ClinicModel model) {
+  void _goToClinicDetailPage(BuildContext context, ClinicModel model) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -35,7 +35,7 @@ class ClinicHistory extends StatelessWidget {
               final model = clinics[index];
 
               return TextButton(
-                onPressed: () => _goToMyBookingPage(
+                onPressed: () => _goToClinicDetailPage(
                   context,
                   model,
                 ),
