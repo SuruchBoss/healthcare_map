@@ -65,26 +65,66 @@ class _DashBoardState extends State<DashBoard> {
               Container(
                   width: screenWidth,
                   padding: const EdgeInsets.only(
-                    top: 90,
-                    left: 10,
+                    top: 70,
+                    left: 15,
                     right: 10,
-                    bottom: 40,
+                    bottom: 20,
                   ),
                   color: Colors.green,
                   child: Row(
                     children: [
                       Expanded(
-                        flex: 8,
-                        child: Text(
-                          "Hello, ${widget.customer.firstName} ${widget.customer.lastName}",
-                          style: TextStyle(
-                            fontSize: 25,
-                            color: Colors.grey[850],
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
+                          flex: 8,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Hello, ${widget.customer.firstName} ${widget.customer.lastName}",
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.grey[850],
+                                  fontWeight: FontWeight.bold,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.star_border,
+                                    color: Colors.black,
+                                    size: 30.0,
+                                  ),
+                                  Text(
+                                    "Member lever:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(50, 1),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        alignment: Alignment.centerLeft),
+                                    onPressed: () => (),
+                                    child: Text(
+                                      "Silver",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 17,
+                                        color: Colors.blue[700],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          )),
                       Expanded(
                           flex: 1,
                           child: IconButton(
