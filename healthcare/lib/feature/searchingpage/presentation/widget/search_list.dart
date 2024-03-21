@@ -14,6 +14,17 @@ class SearchList extends StatefulWidget {
 class _SearchListState extends State<SearchList> {
   String selectTime = '';
 
+  void _goToClinicDetailPage(BuildContext context, ClinicModel model) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClinicDetailPage(
+          model: model,
+        ),
+      ),
+    );
+  }
+
   List<Map<String, dynamic>> generateTimeSlots() {
     final random = Random();
     return List.generate(14, (index) {
@@ -25,17 +36,6 @@ class _SearchListState extends State<SearchList> {
             random.nextBool(), // Randomly mark some slots as unavailable
       };
     });
-  }
-
-  void _goToClinicDetailPage(BuildContext context, ClinicModel model) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ClinicDetailPage(
-          model: model,
-        ),
-      ),
-    );
   }
 
   void showTimeSlotDialog(BuildContext context, ClinicModel model) {
