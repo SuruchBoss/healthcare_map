@@ -97,7 +97,7 @@ class _DashBoardState extends State<DashBoard> {
                                     size: 30.0,
                                   ),
                                   Text(
-                                    "Member lever:",
+                                    "Member level:",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 17,
