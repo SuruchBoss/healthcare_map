@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/db/database_helper.dart';
+import 'package:sqflite/sqflite.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -45,9 +46,41 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             TextButton(
               child: const Text('Confirm'),
-              onPressed: () {
-                _handleRegistration();
+              onPressed: () async {
+                final success = await _handleRegistration();
+                if (!context.mounted) return;
                 Navigator.of(context).pop();
+                if (success) {
+                  Navigator.of(context).pop();
+                } else {
+                  _showUsernameTakenDialog(context);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showUsernameTakenDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Username already taken',
+            style: TextStyle(
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text(
+              'This username is already registered. Please choose another one.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
@@ -88,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.initState();
   }
 
-  void _handleRegistration() async {
+  Future<bool> _handleRegistration() async {
     final db = await DatabaseHelper.instance.database;
 
     Map<String, dynamic> data = {
@@ -99,7 +132,15 @@ class _RegisterPageState extends State<RegisterPage> {
       "password": passwordController.text,
     };
 
-    await db.insert('Customers', data);
+    try {
+      await db.insert('Customers', data);
+      return true;
+    } on DatabaseException catch (e) {
+      if (e.isUniqueConstraintError()) {
+        return false;
+      }
+      rethrow;
+    }
   }
 
   @override

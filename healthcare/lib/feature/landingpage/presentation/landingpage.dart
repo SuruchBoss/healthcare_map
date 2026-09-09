@@ -49,16 +49,14 @@ class _LandingPageState extends State<LandingPage> {
 
     if (userRow != null) {
       final storedPassword = userRow['password'] as String;
-      final name = userRow['name'] as String;
-      final lastName = userRow['lastName'] as String;
-
-      CustomerModel model = CustomerModel(
-        id: userRow['id'].toString(),
-        firstName: name,
-        lastName: lastName,
-      );
 
       if (storedPassword == passwordController.text) {
+        CustomerModel model = CustomerModel(
+          id: userRow['id'].toString(),
+          firstName: userRow['name'] as String,
+          lastName: userRow['lastName'] as String,
+        );
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -67,11 +65,13 @@ class _LandingPageState extends State<LandingPage> {
             ),
           ),
         );
-        error = '';
+        return;
       }
     }
 
-    error = 'Username of Password is incorrect.';
+    setState(() {
+      error = 'Username or password is incorrect.';
+    });
   }
 
   @override

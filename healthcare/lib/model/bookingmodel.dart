@@ -44,3 +44,24 @@ Future<List<BookingModel>> getBookingsForSelectedDate(
 
   return rows.map((row) => BookingModel.fromMap(row)).toList();
 }
+
+Future<List<DateTime>> getBookedTimesForClinic(
+    String clinicName, DateTime date) async {
+  final startOfDay = DateTime(date.year, date.month, date.day);
+  final endOfDay = DateTime(date.year, date.month, date.day + 1);
+
+  final db = await DatabaseHelper.instance.database;
+  final rows = await db.query(
+    'Bookings',
+    where: 'clinicName = ? AND dateTime >= ? AND dateTime < ?',
+    whereArgs: [
+      clinicName,
+      startOfDay.millisecondsSinceEpoch,
+      endOfDay.millisecondsSinceEpoch,
+    ],
+  );
+
+  return rows
+      .map((row) => DateTime.fromMillisecondsSinceEpoch(row['dateTime'] as int))
+      .toList();
+}
