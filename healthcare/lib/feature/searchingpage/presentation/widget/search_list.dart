@@ -6,10 +6,12 @@ import 'package:healthcare/util/datetime.dart';
 import 'package:healthcare/util/distance.dart';
 
 class SearchList extends StatefulWidget {
+  final int customerId;
   final double? userLat;
   final double? userLon;
 
-  const SearchList({super.key, this.userLat, this.userLon});
+  const SearchList(
+      {super.key, required this.customerId, this.userLat, this.userLon});
 
   @override
   State<SearchList> createState() => _SearchListState();
@@ -25,6 +27,7 @@ class _SearchListState extends State<SearchList> {
       MaterialPageRoute(
         builder: (context) => ClinicDetailPage(
           model: model,
+          customerId: widget.customerId,
         ),
       ),
     );
@@ -147,7 +150,7 @@ class _SearchListState extends State<SearchList> {
       selectedDate.day,
       startHour,
     );
-    await addBooking(model.name, bookingDateTime);
+    await addBooking(model.name, bookingDateTime, widget.customerId);
     if (context.mounted) {
       _showDoneBooking(context, model, bookingDateTime);
     }

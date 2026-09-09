@@ -6,7 +6,9 @@ import 'package:healthcare/feature/searchingpage/presentation/widget/search_list
 import 'package:location/location.dart';
 
 class SearchingPage extends StatefulWidget {
-  const SearchingPage({super.key});
+  final int customerId;
+
+  const SearchingPage({super.key, required this.customerId});
 
   @override
   State<SearchingPage> createState() => _SearchingPageState();
@@ -208,6 +210,7 @@ class _SearchingPageState extends State<SearchingPage> {
                             width: screenWidth,
                             height: 500,
                             child: SearchList(
+                              customerId: widget.customerId,
                               userLat: userLocation?.latitude,
                               userLon: userLocation?.longitude,
                             ),

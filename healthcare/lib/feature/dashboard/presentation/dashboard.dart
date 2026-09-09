@@ -21,6 +21,8 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
+  int get _customerId => int.parse(widget.customer.id);
+
   void _logOut() {
     Navigator.pushReplacement(
       context,
@@ -34,7 +36,7 @@ class _DashBoardState extends State<DashBoard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SearchingPage(),
+        builder: (context) => SearchingPage(customerId: _customerId),
       ),
     );
   }
@@ -43,7 +45,7 @@ class _DashBoardState extends State<DashBoard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const MyBookingPage(),
+        builder: (context) => MyBookingPage(customerId: _customerId),
       ),
     );
   }
@@ -138,7 +140,7 @@ class _DashBoardState extends State<DashBoard> {
                                     ),
                                   ),
                                   FutureBuilder<int>(
-                                    future: getBookingCount(),
+                                    future: getBookingCount(_customerId),
                                     builder: (context, snapshot) {
                                       final loyalty = calculateLoyalty(
                                           snapshot.data ?? 0);
@@ -268,7 +270,7 @@ class _DashBoardState extends State<DashBoard> {
                 ),
               ),
               const SizedBox(height: 10),
-              const UpcomingEventsWidget(),
+              UpcomingEventsWidget(customerId: _customerId),
               const SizedBox(height: 30),
               Text(
                 "Previous clinic",
@@ -282,7 +284,7 @@ class _DashBoardState extends State<DashBoard> {
               SizedBox(
                 width: screenWidth,
                 height: 100,
-                child: const ClinicHistory(),
+                child: ClinicHistory(customerId: _customerId),
               ),
               const SizedBox(height: 20),
               Divider(
@@ -305,7 +307,7 @@ class _DashBoardState extends State<DashBoard> {
               SizedBox(
                 width: screenWidth,
                 height: 400,
-                child: const ClinicPromotion(),
+                child: ClinicPromotion(customerId: _customerId),
               ),
               const SizedBox(height: 30),
             ],

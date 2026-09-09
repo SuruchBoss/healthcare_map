@@ -5,7 +5,9 @@ import 'package:healthcare/util/datetime.dart';
 
 class ClinicDetailPage extends StatefulWidget {
   final ClinicModel model;
-  const ClinicDetailPage({super.key, required this.model});
+  final int customerId;
+  const ClinicDetailPage(
+      {super.key, required this.model, required this.customerId});
 
   @override
   State<ClinicDetailPage> createState() => _ClinicDetailPageState();
@@ -132,7 +134,7 @@ class _ClinicDetailPageState extends State<ClinicDetailPage> {
       selectedDate.day,
       startHour,
     );
-    await addBooking(model.name, bookingDateTime);
+    await addBooking(model.name, bookingDateTime, widget.customerId);
     if (context.mounted) {
       _showDoneBooking(context, model, bookingDateTime);
     }

@@ -3,7 +3,9 @@ import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.
 import 'package:healthcare/model/clinicmodel.dart';
 
 class ClinicHistory extends StatelessWidget {
-  const ClinicHistory({super.key});
+  final int customerId;
+
+  const ClinicHistory({super.key, required this.customerId});
 
   void _goToClinicDetailPage(BuildContext context, ClinicModel model) {
     Navigator.push(
@@ -11,6 +13,7 @@ class ClinicHistory extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => ClinicDetailPage(
           model: model,
+          customerId: customerId,
         ),
       ),
     );
@@ -19,7 +22,7 @@ class ClinicHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ClinicModel>>(
-      future: getRecentlyBookedClinics(),
+      future: getRecentlyBookedClinics(customerId: customerId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

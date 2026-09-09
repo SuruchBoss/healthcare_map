@@ -5,7 +5,9 @@ import 'package:healthcare/util/datetime.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MyBookingPage extends StatefulWidget {
-  const MyBookingPage({super.key});
+  final int customerId;
+
+  const MyBookingPage({super.key, required this.customerId});
 
   @override
   State<MyBookingPage> createState() => _MyBookingPageState();
@@ -18,7 +20,7 @@ class _MyBookingPageState extends State<MyBookingPage> {
   List<BookingModel> _selectedDayBookings = [];
 
   _fetchBookingsForDay(DateTime day) async {
-    final bookings = await getBookingsForSelectedDate(day);
+    final bookings = await getBookingsForSelectedDate(day, widget.customerId);
     setState(() {
       _selectedDayBookings = bookings;
     });

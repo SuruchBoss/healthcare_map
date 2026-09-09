@@ -4,7 +4,9 @@ import 'package:healthcare/model/clinicmodel.dart';
 import 'package:healthcare/model/promotionmodel.dart';
 
 class ClinicPromotion extends StatelessWidget {
-  const ClinicPromotion({super.key});
+  final int customerId;
+
+  const ClinicPromotion({super.key, required this.customerId});
 
   Future<void> _goToClinicDetailPage(
       BuildContext context, String clinicName) async {
@@ -18,6 +20,7 @@ class ClinicPromotion extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => ClinicDetailPage(
           model: model,
+          customerId: customerId,
         ),
       ),
     );

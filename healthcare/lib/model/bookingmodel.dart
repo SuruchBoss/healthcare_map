@@ -18,23 +18,27 @@ class BookingModel {
   }
 }
 
-Future<int> getBookingCount() async {
+Future<int> getBookingCount(int customerId) async {
   final db = await DatabaseHelper.instance.database;
-  final result =
-      await db.rawQuery('SELECT COUNT(*) as count FROM Bookings');
+  final result = await db.rawQuery(
+    'SELECT COUNT(*) as count FROM Bookings WHERE customerId = ?',
+    [customerId],
+  );
   return Sqflite.firstIntValue(result) ?? 0;
 }
 
-Future<void> addBooking(String clinicName, DateTime dateTime) async {
+Future<void> addBooking(
+    String clinicName, DateTime dateTime, int customerId) async {
   final db = await DatabaseHelper.instance.database;
   await db.insert('Bookings', {
+    'customerId': customerId,
     'clinicName': clinicName,
     'dateTime': dateTime.millisecondsSinceEpoch,
   });
 }
 
 Future<List<BookingModel>> getBookingsForSelectedDate(
-    DateTime selectedDate) async {
+    DateTime selectedDate, int customerId) async {
   final startOfDay =
       DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
   final endOfDay =
@@ -43,8 +47,9 @@ Future<List<BookingModel>> getBookingsForSelectedDate(
   final db = await DatabaseHelper.instance.database;
   final rows = await db.query(
     'Bookings',
-    where: 'dateTime >= ? AND dateTime < ?',
+    where: 'customerId = ? AND dateTime >= ? AND dateTime < ?',
     whereArgs: [
+      customerId,
       startOfDay.millisecondsSinceEpoch,
       endOfDay.millisecondsSinceEpoch,
     ],
@@ -53,6 +58,8 @@ Future<List<BookingModel>> getBookingsForSelectedDate(
   return rows.map((row) => BookingModel.fromMap(row)).toList();
 }
 
+/// Booked hours for a clinic on a date, across every customer — a slot a
+/// different customer already took should still show as unavailable.
 Future<List<DateTime>> getBookedTimesForClinic(
     String clinicName, DateTime date) async {
   final startOfDay = DateTime(date.year, date.month, date.day);

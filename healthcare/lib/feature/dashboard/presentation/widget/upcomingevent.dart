@@ -6,7 +6,9 @@ import 'package:healthcare/util/datetime.dart';
 import 'package:healthcare/util/findevent.dart';
 
 class UpcomingEventsWidget extends StatefulWidget {
-  const UpcomingEventsWidget({super.key});
+  final int customerId;
+
+  const UpcomingEventsWidget({super.key, required this.customerId});
 
   @override
   _UpcomingEventsWidgetState createState() => _UpcomingEventsWidgetState();
@@ -22,9 +24,10 @@ class _UpcomingEventsWidgetState extends State<UpcomingEventsWidget> {
   }
 
   Future<List<BookingModel>> _fetchBookings() async {
-    DateTime? nearestEventDate = await findDateOfNearestUpcomingEvent();
+    DateTime? nearestEventDate =
+        await findDateOfNearestUpcomingEvent(widget.customerId);
     if (nearestEventDate != null) {
-      return getBookingsForSelectedDate(nearestEventDate);
+      return getBookingsForSelectedDate(nearestEventDate, widget.customerId);
     }
     return [];
   }

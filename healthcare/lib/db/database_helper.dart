@@ -53,8 +53,10 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE Bookings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        customerId INTEGER NOT NULL,
         clinicName TEXT NOT NULL,
-        dateTime INTEGER NOT NULL
+        dateTime INTEGER NOT NULL,
+        FOREIGN KEY (customerId) REFERENCES Customers (id)
       )
     ''');
 
@@ -73,7 +75,7 @@ class DatabaseHelper {
   }
 
   Future<void> _seedDemoData(Database db) async {
-    await db.insert('Customers', {
+    final adminId = await db.insert('Customers', {
       'name': 'Admin',
       'lastName': 'Demo',
       'age': 30,
@@ -89,11 +91,13 @@ class DatabaseHelper {
     final now = DateTime.now();
     final demoBookings = [
       {
+        'customerId': adminId,
         'clinicName': _demoClinics[0]['name'],
         'dateTime': DateTime(now.year, now.month, now.day, 10)
             .millisecondsSinceEpoch,
       },
       {
+        'customerId': adminId,
         'clinicName': _demoClinics[1]['name'],
         'dateTime': DateTime(now.year, now.month, now.day + 2, 14)
             .millisecondsSinceEpoch,
