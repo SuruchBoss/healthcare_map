@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
+import 'package:healthcare/widget/skeleton_loader.dart';
 
 class ClinicHistory extends StatelessWidget {
-  const ClinicHistory({super.key});
+  final int customerId;
+
+  const ClinicHistory({super.key, required this.customerId});
 
   void _goToClinicDetailPage(BuildContext context, ClinicModel model) {
     Navigator.push(
@@ -11,6 +14,7 @@ class ClinicHistory extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => ClinicDetailPage(
           model: model,
+          customerId: customerId,
         ),
       ),
     );
@@ -19,14 +23,23 @@ class ClinicHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ClinicModel>>(
-      future: getClinics(),
+      future: getRecentlyBookedClinics(customerId: customerId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const SkeletonRow(count: 3, itemWidth: 120, itemHeight: 100);
         } else if (snapshot.hasError) {
           return const Center(child: Text('An error occurred!'));
         } else {
           final clinics = snapshot.data!;
+
+          if (clinics.isEmpty) {
+            return Center(
+              child: Text(
+                "You haven't booked any clinic yet",
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            );
+          }
 
           return ListView.builder(
             scrollDirection: Axis.horizontal,

@@ -5,7 +5,9 @@ import 'package:healthcare/feature/dashboard/presentation/widget/upcomingevent.d
 import 'package:healthcare/feature/landingpage/presentation/landingpage.dart';
 import 'package:healthcare/feature/mybooking/presentation/mybookingpage.dart';
 import 'package:healthcare/feature/searchingpage/presentation/searchingpage.dart';
+import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/customermodel.dart';
+import 'package:healthcare/util/loyalty.dart';
 
 class DashBoard extends StatefulWidget {
   final CustomerModel customer;
@@ -19,6 +21,8 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
+  int get _customerId => int.parse(widget.customer.id);
+
   void _logOut() {
     Navigator.pushReplacement(
       context,
@@ -28,21 +32,57 @@ class _DashBoardState extends State<DashBoard> {
     );
   }
 
-  void _goToSearchPage() {
-    Navigator.push(
+  Future<void> _goToSearchPage() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SearchingPage(),
+        builder: (context) => SearchingPage(customerId: _customerId),
       ),
     );
+    // A booking may have been made while away; refresh loyalty tier,
+    // upcoming events, and history.
+    if (mounted) setState(() {});
   }
 
-  void _goToMyBookingPage() {
-    Navigator.push(
+  Future<void> _goToMyBookingPage() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const MyBookingPage(),
+        builder: (context) => MyBookingPage(customerId: _customerId),
       ),
+    );
+    // A booking may have been made or cancelled while away.
+    if (mounted) setState(() {});
+  }
+
+  void _showLoyaltyDialog(BuildContext context, LoyaltyInfo loyalty) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Loyalty Program'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Tier: ${loyalty.tier}'),
+              Text('Points: ${loyalty.points}'),
+              const SizedBox(height: 8),
+              if (loyalty.nextTier != null)
+                Text(
+                    'Book ${loyalty.bookingsToNextTier} more time(s) to reach ${loyalty.nextTier}!')
+              else
+                const Text("You've reached the highest tier!"),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -104,22 +144,30 @@ class _DashBoardState extends State<DashBoard> {
                                       color: Colors.grey[700],
                                     ),
                                   ),
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        minimumSize: const Size(50, 1),
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        alignment: Alignment.centerLeft),
-                                    onPressed: () => (),
-                                    child: Text(
-                                      "Silver",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                        color: Colors.blue[700],
-                                      ),
-                                    ),
+                                  FutureBuilder<int>(
+                                    future: getBookingCount(_customerId),
+                                    builder: (context, snapshot) {
+                                      final loyalty = calculateLoyalty(
+                                          snapshot.data ?? 0);
+                                      return TextButton(
+                                        style: TextButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: const Size(50, 1),
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
+                                            alignment: Alignment.centerLeft),
+                                        onPressed: () =>
+                                            _showLoyaltyDialog(context, loyalty),
+                                        child: Text(
+                                          loyalty.tier,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                            color: Colors.blue[700],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ],
                               )
@@ -227,7 +275,7 @@ class _DashBoardState extends State<DashBoard> {
                 ),
               ),
               const SizedBox(height: 10),
-              const UpcomingEventsWidget(),
+              UpcomingEventsWidget(customerId: _customerId),
               const SizedBox(height: 30),
               Text(
                 "Previous clinic",
@@ -241,7 +289,7 @@ class _DashBoardState extends State<DashBoard> {
               SizedBox(
                 width: screenWidth,
                 height: 100,
-                child: const ClinicHistory(),
+                child: ClinicHistory(customerId: _customerId),
               ),
               const SizedBox(height: 20),
               Divider(
@@ -264,7 +312,7 @@ class _DashBoardState extends State<DashBoard> {
               SizedBox(
                 width: screenWidth,
                 height: 400,
-                child: const ClinicPromotion(),
+                child: ClinicPromotion(customerId: _customerId),
               ),
               const SizedBox(height: 30),
             ],

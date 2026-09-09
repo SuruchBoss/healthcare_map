@@ -3,9 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:healthcare/feature/searchingpage/presentation/widget/search_list.dart';
+import 'package:location/location.dart';
 
 class SearchingPage extends StatefulWidget {
-  const SearchingPage({super.key});
+  final int customerId;
+
+  const SearchingPage({super.key, required this.customerId});
 
   @override
   State<SearchingPage> createState() => _SearchingPageState();
@@ -15,25 +18,76 @@ class _SearchingPageState extends State<SearchingPage> {
   bool isShow = false;
 
   GoogleMapController? mapController;
-  Set<Marker> markers = Set();
+  Set<Marker> markers = {};
 
-  final LatLng _center = const LatLng(13.746597, 100.539360);
+  static const LatLng _defaultCenter = LatLng(13.746597, 100.539360);
+  LatLng _center = _defaultCenter;
+  LatLng? userLocation;
+  String? locationError;
+
+  @override
+  void initState() {
+    super.initState();
+    _determinePosition();
+  }
+
+  Future<void> _determinePosition() async {
+    final location = Location();
+
+    bool serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        if (mounted) {
+          setState(() => locationError =
+              'Location service is off. Showing default area.');
+        }
+        return;
+      }
+    }
+
+    PermissionStatus permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        if (mounted) {
+          setState(() => locationError =
+              'Location permission denied. Showing default area.');
+        }
+        return;
+      }
+    }
+
+    final locationData = await location.getLocation();
+    if (locationData.latitude == null || locationData.longitude == null) {
+      return;
+    }
+
+    final newCenter = LatLng(locationData.latitude!, locationData.longitude!);
+    if (!mounted) return;
+
+    setState(() {
+      _center = newCenter;
+      userLocation = newCenter;
+      locationError = null;
+      markers = {
+        Marker(
+          markerId: const MarkerId('my-location'),
+          position: newCenter,
+          infoWindow: const InfoWindow(title: 'My Location'),
+        ),
+      };
+    });
+
+    mapController?.animateCamera(CameraUpdate.newLatLngZoom(newCenter, 13.0));
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    setState(() {
-      markers.add(
-        Marker(
-          markerId: MarkerId(_center.toString()),
-          position: _center,
-          infoWindow: const InfoWindow(
-            title: 'My Location',
-            snippet: 'This is a snippet',
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ),
-      );
-    });
+    if (userLocation != null) {
+      mapController!
+          .animateCamera(CameraUpdate.newLatLngZoom(userLocation!, 13.0));
+    }
   }
 
   @override
@@ -72,12 +126,7 @@ class _SearchingPageState extends State<SearchingPage> {
                   target: _center,
                   zoom: 11.0,
                 ),
-                markers: {
-                  Marker(
-                    markerId: const MarkerId('Thailand'),
-                    position: _center,
-                  ),
-                },
+                markers: markers,
               ),
             ),
             Container(
@@ -121,6 +170,17 @@ class _SearchingPageState extends State<SearchingPage> {
                         color: Colors.grey[800],
                       ),
                     ),
+                    if (locationError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          locationError!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.orange[800],
+                          ),
+                        ),
+                      ),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: TextButton(
@@ -149,7 +209,11 @@ class _SearchingPageState extends State<SearchingPage> {
                         ? SizedBox(
                             width: screenWidth,
                             height: 500,
-                            child: const SearchList(),
+                            child: SearchList(
+                              customerId: widget.customerId,
+                              userLat: userLocation?.latitude,
+                              userLon: userLocation?.longitude,
+                            ),
                           )
                         : const SizedBox(),
                   ],

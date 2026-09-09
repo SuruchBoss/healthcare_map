@@ -1,11 +1,13 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/clinicmodel.dart';
+import 'package:healthcare/util/datetime.dart';
 
 class ClinicDetailPage extends StatefulWidget {
   final ClinicModel model;
-  const ClinicDetailPage({super.key, required this.model});
+  final int customerId;
+  const ClinicDetailPage(
+      {super.key, required this.model, required this.customerId});
 
   @override
   State<ClinicDetailPage> createState() => _ClinicDetailPageState();
@@ -13,25 +15,45 @@ class ClinicDetailPage extends StatefulWidget {
 
 class _ClinicDetailPageState extends State<ClinicDetailPage> {
   String selectTime = '';
+  DateTime selectedDate = DateTime.now();
 
-  List<Map<String, dynamic>> generateTimeSlots() {
-    final random = Random();
+  List<Map<String, dynamic>> generateTimeSlots(Set<int> bookedHours) {
     return List.generate(14, (index) {
       final hour = 7 + index;
       return {
         'time':
             '${hour.toString().padLeft(2, '0')}.00 - ${(hour + 1).toString().padLeft(2, '0')}.00',
-        'available':
-            random.nextBool(), // Randomly mark some slots as unavailable
+        'hour': hour,
+        'available': !bookedHours.contains(hour),
       };
     });
   }
 
-  void showTimeSlotDialog(BuildContext context, ClinicModel model) {
-    final timeSlots = generateTimeSlots();
-    Map<String, dynamic>? selectedSlot =
-        timeSlots.firstWhere((slot) => slot['available']);
+  Future<void> showTimeSlotDialog(
+      BuildContext context, ClinicModel model) async {
+    final now = DateTime.now();
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 60)),
+    );
+    if (pickedDate == null || !context.mounted) return;
 
+    final bookedTimes = await getBookedTimesForClinic(model.name, pickedDate);
+    final bookedHours = bookedTimes.map((dt) => dt.hour).toSet();
+    final timeSlots = generateTimeSlots(bookedHours);
+
+    if (!timeSlots.any((slot) => slot['available'] as bool)) {
+      if (context.mounted) _showFullyBookedDialog(context);
+      return;
+    }
+
+    selectedDate = pickedDate;
+    Map<String, dynamic>? selectedSlot =
+        timeSlots.firstWhere((slot) => slot['available'] as bool);
+
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -73,7 +95,7 @@ class _ClinicDetailPageState extends State<ClinicDetailPage> {
                       selectTime = selectedSlot!['time'];
 
                       Navigator.of(context).pop(true);
-                      _showDoneBooking(context, model);
+                      _bookSlot(context, model);
                     } else {}
                   },
                 ),
@@ -85,14 +107,50 @@ class _ClinicDetailPageState extends State<ClinicDetailPage> {
     );
   }
 
-  Future<void> _showDoneBooking(BuildContext context, ClinicModel model) {
+  void _showFullyBookedDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Fully booked'),
+          content: const Text(
+              'All time slots for this date are already booked. Please choose another date.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _bookSlot(BuildContext context, ClinicModel model) async {
+    final startHour = int.parse(selectTime.split('.').first);
+    final bookingDateTime = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      startHour,
+    );
+    await addBooking(model.name, bookingDateTime, widget.customerId);
+    if (context.mounted) {
+      _showDoneBooking(context, model, bookingDateTime);
+    }
+  }
+
+  Future<void> _showDoneBooking(
+      BuildContext context, ClinicModel model, DateTime bookingDateTime) {
+    final formattedDateTime =
+        formatDateTime(bookingDateTime.toLocal().toString());
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Thank you !'),
-          content:
-              Text('You have done booking clinic ${model.name} at $selectTime'),
+          content: Text(
+              'You have booked clinic ${model.name} on $formattedDateTime'),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
