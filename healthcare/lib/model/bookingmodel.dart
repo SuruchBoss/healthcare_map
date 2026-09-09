@@ -2,16 +2,19 @@ import 'package:healthcare/db/database_helper.dart';
 import 'package:sqflite/sqflite.dart';
 
 class BookingModel {
+  final int id;
   final DateTime dateTime;
   final String clinicName;
 
   const BookingModel({
+    required this.id,
     required this.dateTime,
     required this.clinicName,
   });
 
   factory BookingModel.fromMap(Map<String, Object?> map) {
     return BookingModel(
+      id: map['id'] as int,
       dateTime: DateTime.fromMillisecondsSinceEpoch(map['dateTime'] as int),
       clinicName: map['clinicName'] as String,
     );
@@ -35,6 +38,11 @@ Future<void> addBooking(
     'clinicName': clinicName,
     'dateTime': dateTime.millisecondsSinceEpoch,
   });
+}
+
+Future<void> deleteBooking(int id) async {
+  final db = await DatabaseHelper.instance.database;
+  await db.delete('Bookings', where: 'id = ?', whereArgs: [id]);
 }
 
 Future<List<BookingModel>> getBookingsForSelectedDate(

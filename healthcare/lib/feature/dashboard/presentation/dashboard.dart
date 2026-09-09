@@ -32,22 +32,27 @@ class _DashBoardState extends State<DashBoard> {
     );
   }
 
-  void _goToSearchPage() {
-    Navigator.push(
+  Future<void> _goToSearchPage() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => SearchingPage(customerId: _customerId),
       ),
     );
+    // A booking may have been made while away; refresh loyalty tier,
+    // upcoming events, and history.
+    if (mounted) setState(() {});
   }
 
-  void _goToMyBookingPage() {
-    Navigator.push(
+  Future<void> _goToMyBookingPage() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => MyBookingPage(customerId: _customerId),
       ),
     );
+    // A booking may have been made or cancelled while away.
+    if (mounted) setState(() {});
   }
 
   void _showLoyaltyDialog(BuildContext context, LoyaltyInfo loyalty) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
+import 'package:healthcare/widget/skeleton_loader.dart';
 
 class ClinicHistory extends StatelessWidget {
   final int customerId;
@@ -25,7 +26,7 @@ class ClinicHistory extends StatelessWidget {
       future: getRecentlyBookedClinics(customerId: customerId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const SkeletonRow(count: 3, itemWidth: 120, itemHeight: 100);
         } else if (snapshot.hasError) {
           return const Center(child: Text('An error occurred!'));
         } else {

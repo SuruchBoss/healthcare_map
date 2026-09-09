@@ -4,6 +4,7 @@ import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 import 'package:healthcare/util/datetime.dart';
 import 'package:healthcare/util/distance.dart';
+import 'package:healthcare/widget/skeleton_loader.dart';
 
 class SearchList extends StatefulWidget {
   final int customerId;
@@ -189,11 +190,21 @@ class _SearchListState extends State<SearchList> {
       future: getClinics(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const SkeletonColumn(count: 3, itemHeight: 150);
         } else if (snapshot.hasError) {
           return const Center(child: Text('An error occurred!'));
         } else {
           final clinics = List<ClinicModel>.from(snapshot.data!);
+
+          if (clinics.isEmpty) {
+            return Center(
+              child: Text(
+                'No clinics found',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            );
+          }
+
           final userLat = widget.userLat;
           final userLon = widget.userLon;
 

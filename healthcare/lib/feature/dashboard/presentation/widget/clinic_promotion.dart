@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 import 'package:healthcare/model/promotionmodel.dart';
+import 'package:healthcare/widget/skeleton_loader.dart';
 
 class ClinicPromotion extends StatelessWidget {
   final int customerId;
@@ -32,7 +33,7 @@ class ClinicPromotion extends StatelessWidget {
       future: getPromotions(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const SkeletonColumn(count: 3, itemHeight: 190);
         } else if (snapshot.hasError) {
           return const Center(child: Text('An error occurred!'));
         } else {

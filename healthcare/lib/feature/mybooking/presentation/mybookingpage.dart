@@ -26,9 +26,39 @@ class _MyBookingPageState extends State<MyBookingPage> {
     });
   }
 
+  Future<void> _confirmCancelBooking(
+      BuildContext context, BookingModel booking) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Cancel booking'),
+          content: Text(
+              'Cancel your booking at ${booking.clinicName}?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: const Text('Yes, cancel'),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await deleteBooking(booking.id);
+      await _fetchBookingsForDay(_selectedDay);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _fetchBookingsForDay(_selectedDay);
   }
 
   @override
@@ -64,23 +94,36 @@ class _MyBookingPageState extends State<MyBookingPage> {
             },
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _selectedDayBookings.length,
-              itemBuilder: (context, index) {
-                final booking = _selectedDayBookings[index];
-                String dateTime =
-                    formatDateTime(booking.dateTime.toLocal().toString());
+            child: _selectedDayBookings.isEmpty
+                ? Center(
+                    child: Text(
+                      'No bookings on this day',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _selectedDayBookings.length,
+                    itemBuilder: (context, index) {
+                      final booking = _selectedDayBookings[index];
+                      String dateTime = formatDateTime(
+                          booking.dateTime.toLocal().toString());
 
-                print(booking.dateTime.toLocal());
-                return ListTile(
-                  title: Text(booking.clinicName),
-                  subtitle: Text(
-                    'Date: $dateTime',
-                    style: const TextStyle(fontSize: 12.0),
+                      return ListTile(
+                        title: Text(booking.clinicName),
+                        subtitle: Text(
+                          'Date: $dateTime',
+                          style: const TextStyle(fontSize: 12.0),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.cancel_outlined,
+                              color: Colors.red),
+                          tooltip: 'Cancel booking',
+                          onPressed: () =>
+                              _confirmCancelBooking(context, booking),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
