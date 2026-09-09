@@ -19,7 +19,7 @@ class ClinicHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ClinicModel>>(
-      future: getClinics(),
+      future: getRecentlyBookedClinics(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -27,6 +27,15 @@ class ClinicHistory extends StatelessWidget {
           return const Center(child: Text('An error occurred!'));
         } else {
           final clinics = snapshot.data!;
+
+          if (clinics.isEmpty) {
+            return Center(
+              child: Text(
+                "You haven't booked any clinic yet",
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            );
+          }
 
           return ListView.builder(
             scrollDirection: Axis.horizontal,

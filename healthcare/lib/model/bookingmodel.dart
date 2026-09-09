@@ -1,4 +1,5 @@
 import 'package:healthcare/db/database_helper.dart';
+import 'package:sqflite/sqflite.dart';
 
 class BookingModel {
   final DateTime dateTime;
@@ -15,6 +16,13 @@ class BookingModel {
       clinicName: map['clinicName'] as String,
     );
   }
+}
+
+Future<int> getBookingCount() async {
+  final db = await DatabaseHelper.instance.database;
+  final result =
+      await db.rawQuery('SELECT COUNT(*) as count FROM Bookings');
+  return Sqflite.firstIntValue(result) ?? 0;
 }
 
 Future<void> addBooking(String clinicName, DateTime dateTime) async {

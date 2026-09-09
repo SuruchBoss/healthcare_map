@@ -38,3 +38,29 @@ Future<List<ClinicModel>> getClinics() async {
 
   return rows.map((row) => ClinicModel.fromMap(row)).toList();
 }
+
+/// Clinics that already have a booking, most recently booked first.
+Future<List<ClinicModel>> getRecentlyBookedClinics({int limit = 10}) async {
+  final db = await DatabaseHelper.instance.database;
+  final bookingRows = await db.rawQuery('''
+    SELECT clinicName, MAX(dateTime) as latestBooking
+    FROM Bookings
+    GROUP BY clinicName
+    ORDER BY latestBooking DESC
+    LIMIT ?
+  ''', [limit]);
+
+  final clinics = <ClinicModel>[];
+  for (final bookingRow in bookingRows) {
+    final clinicRows = await db.query(
+      'Clinics',
+      where: 'name = ?',
+      whereArgs: [bookingRow['clinicName']],
+      limit: 1,
+    );
+    if (clinicRows.isNotEmpty) {
+      clinics.add(ClinicModel.fromMap(clinicRows.first));
+    }
+  }
+  return clinics;
+}

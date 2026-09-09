@@ -5,7 +5,9 @@ import 'package:healthcare/feature/dashboard/presentation/widget/upcomingevent.d
 import 'package:healthcare/feature/landingpage/presentation/landingpage.dart';
 import 'package:healthcare/feature/mybooking/presentation/mybookingpage.dart';
 import 'package:healthcare/feature/searchingpage/presentation/searchingpage.dart';
+import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/customermodel.dart';
+import 'package:healthcare/util/loyalty.dart';
 
 class DashBoard extends StatefulWidget {
   final CustomerModel customer;
@@ -43,6 +45,37 @@ class _DashBoardState extends State<DashBoard> {
       MaterialPageRoute(
         builder: (context) => const MyBookingPage(),
       ),
+    );
+  }
+
+  void _showLoyaltyDialog(BuildContext context, LoyaltyInfo loyalty) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Loyalty Program'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Tier: ${loyalty.tier}'),
+              Text('Points: ${loyalty.points}'),
+              const SizedBox(height: 8),
+              if (loyalty.nextTier != null)
+                Text(
+                    'Book ${loyalty.bookingsToNextTier} more time(s) to reach ${loyalty.nextTier}!')
+              else
+                const Text("You've reached the highest tier!"),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -104,22 +137,30 @@ class _DashBoardState extends State<DashBoard> {
                                       color: Colors.grey[700],
                                     ),
                                   ),
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        minimumSize: const Size(50, 1),
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        alignment: Alignment.centerLeft),
-                                    onPressed: () => (),
-                                    child: Text(
-                                      "Silver",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                        color: Colors.blue[700],
-                                      ),
-                                    ),
+                                  FutureBuilder<int>(
+                                    future: getBookingCount(),
+                                    builder: (context, snapshot) {
+                                      final loyalty = calculateLoyalty(
+                                          snapshot.data ?? 0);
+                                      return TextButton(
+                                        style: TextButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: const Size(50, 1),
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
+                                            alignment: Alignment.centerLeft),
+                                        onPressed: () =>
+                                            _showLoyaltyDialog(context, loyalty),
+                                        child: Text(
+                                          loyalty.tier,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                            color: Colors.blue[700],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ],
                               )

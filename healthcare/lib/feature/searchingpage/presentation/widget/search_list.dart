@@ -3,9 +3,13 @@ import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.
 import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 import 'package:healthcare/util/datetime.dart';
+import 'package:healthcare/util/distance.dart';
 
 class SearchList extends StatefulWidget {
-  const SearchList({super.key});
+  final double? userLat;
+  final double? userLon;
+
+  const SearchList({super.key, this.userLat, this.userLon});
 
   @override
   State<SearchList> createState() => _SearchListState();
@@ -186,7 +190,19 @@ class _SearchListState extends State<SearchList> {
         } else if (snapshot.hasError) {
           return const Center(child: Text('An error occurred!'));
         } else {
-          final clinics = snapshot.data!;
+          final clinics = List<ClinicModel>.from(snapshot.data!);
+          final userLat = widget.userLat;
+          final userLon = widget.userLon;
+
+          if (userLat != null && userLon != null) {
+            clinics.sort((a, b) {
+              final distanceA = calculateDistanceKm(
+                  userLat, userLon, double.parse(a.lat), double.parse(a.lon));
+              final distanceB = calculateDistanceKm(
+                  userLat, userLon, double.parse(b.lat), double.parse(b.lon));
+              return distanceA.compareTo(distanceB);
+            });
+          }
 
           return ListView.builder(
             shrinkWrap: true,
@@ -195,6 +211,9 @@ class _SearchListState extends State<SearchList> {
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
               final model = clinics[index];
+              final distanceText = (userLat != null && userLon != null)
+                  ? '${calculateDistanceKm(userLat, userLon, double.parse(model.lat), double.parse(model.lon)).toStringAsFixed(1)} km away'
+                  : null;
 
               return Center(
                 child: TextButton(
@@ -239,6 +258,14 @@ class _SearchListState extends State<SearchList> {
                                     fontSize: 16, color: Colors.blue[900]),
                               ),
                               Text(model.detail),
+                              if (distanceText != null)
+                                Text(
+                                  distanceText,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
                               const SizedBox(height: 15),
                               TextButton(
                                 style: TextButton.styleFrom(

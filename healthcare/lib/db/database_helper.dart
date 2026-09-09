@@ -58,6 +58,17 @@ class DatabaseHelper {
       )
     ''');
 
+    await db.execute('''
+      CREATE TABLE Promotions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        discountPercent INTEGER NOT NULL,
+        clinicName TEXT NOT NULL,
+        imageUrl TEXT NOT NULL
+      )
+    ''');
+
     await _seedDemoData(db);
   }
 
@@ -90,6 +101,10 @@ class DatabaseHelper {
     ];
     for (final booking in demoBookings) {
       await db.insert('Bookings', booking);
+    }
+
+    for (final promotion in _demoPromotions) {
+      await db.insert('Promotions', promotion);
     }
   }
 
@@ -125,6 +140,30 @@ class DatabaseHelper {
       'lat': '13.7248',
       'lon': '100.5340',
       'imageUrl': 'assets/clinic/clinic_4.png',
+    },
+  ];
+
+  static final List<Map<String, Object?>> _demoPromotions = [
+    {
+      'title': 'New Patient Special',
+      'description': '20% off your first general checkup.',
+      'discountPercent': 20,
+      'clinicName': _demoClinics[0]['name'],
+      'imageUrl': _demoClinics[0]['imageUrl'],
+    },
+    {
+      'title': 'Bright Smile Package',
+      'description': '15% off teeth cleaning and whitening.',
+      'discountPercent': 15,
+      'clinicName': _demoClinics[1]['name'],
+      'imageUrl': _demoClinics[1]['imageUrl'],
+    },
+    {
+      'title': 'Recovery Boost',
+      'description': '10% off a 5-session physiotherapy package.',
+      'discountPercent': 10,
+      'clinicName': _demoClinics[2]['name'],
+      'imageUrl': _demoClinics[2]['imageUrl'],
     },
   ];
 }

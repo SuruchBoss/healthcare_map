@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
+import 'package:healthcare/model/promotionmodel.dart';
 
 class ClinicPromotion extends StatelessWidget {
   const ClinicPromotion({super.key});
 
-  void _goToClinicDetailPage(BuildContext context, ClinicModel model) {
+  Future<void> _goToClinicDetailPage(
+      BuildContext context, String clinicName) async {
+    final clinics = await getClinics();
+    final matches = clinics.where((c) => c.name == clinicName);
+    if (matches.isEmpty || !context.mounted) return;
+    final model = matches.first;
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -18,30 +25,37 @@ class ClinicPromotion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ClinicModel>>(
-      future: getClinics(),
+    return FutureBuilder<List<PromotionModel>>(
+      future: getPromotions(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return const Center(child: Text('An error occurred!'));
         } else {
-          final clinics = snapshot.data!;
+          final promotions = snapshot.data!;
+
+          if (promotions.isEmpty) {
+            return Center(
+              child: Text(
+                "No promotions right now",
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            );
+          }
 
           return ListView.builder(
             shrinkWrap: true,
             padding: const EdgeInsets.all(0),
-            itemCount: clinics.length,
+            itemCount: promotions.length,
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
-              final model = clinics[index];
+              final promotion = promotions[index];
 
               return Center(
                 child: TextButton(
-                  onPressed: () => _goToClinicDetailPage(
-                    context,
-                    model,
-                  ),
+                  onPressed: () =>
+                      _goToClinicDetailPage(context, promotion.clinicName),
                   style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
                       minimumSize: const Size(50, 1),
@@ -55,16 +69,62 @@ class ClinicPromotion extends StatelessWidget {
                       border: Border.all(color: Colors.blueAccent),
                       borderRadius: BorderRadius.circular(7),
                     ),
-                    child: Column(
+                    child: Stack(
                       children: [
-                        Image.asset(
-                          model.imageUrl!,
-                          width: 450,
-                          height: 150,
-                          fit: BoxFit.cover,
+                        Column(
+                          children: [
+                            Image.asset(
+                              promotion.imageUrl,
+                              width: 450,
+                              height: 150,
+                              fit: BoxFit.cover,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    promotion.title,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(promotion.description),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    promotion.clinicName,
+                                    style: TextStyle(
+                                      color: Colors.blue[900],
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 20),
-                        Text(model.name),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.orange[700],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '-${promotion.discountPercent}%',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
