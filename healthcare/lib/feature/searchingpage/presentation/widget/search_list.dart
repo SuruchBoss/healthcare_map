@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
+import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 
 class SearchList extends StatefulWidget {
@@ -84,7 +85,7 @@ class _SearchListState extends State<SearchList> {
                       selectTime = selectedSlot!['time'];
 
                       Navigator.of(context).pop(true);
-                      _showDoneBooking(context, model);
+                      _bookSlot(context, model);
                     } else {}
                   },
                 ),
@@ -94,6 +95,18 @@ class _SearchListState extends State<SearchList> {
         );
       },
     );
+  }
+
+  Future<void> _bookSlot(BuildContext context, ClinicModel model) async {
+    final startHour = int.parse(selectTime.split('.').first);
+    final now = DateTime.now();
+    await addBooking(
+      model.name,
+      DateTime(now.year, now.month, now.day, startHour),
+    );
+    if (context.mounted) {
+      _showDoneBooking(context, model);
+    }
   }
 
   Future<void> _showDoneBooking(BuildContext context, ClinicModel model) {

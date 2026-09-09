@@ -15,8 +15,9 @@ Feature
 - Loyalty program
 ================
 Third party
-- Firebase firestore
-https://console.firebase.google.com/u/0/project/healthcare-bf396/overview
+- sqflite (local on-device SQLite database, replaces Firebase Firestore
+  used previously; sample data is seeded automatically on first run so
+  the app runs standalone for demo purposes)
 
 - Google map API
 ================

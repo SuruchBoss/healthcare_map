@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:healthcare/db/database_helper.dart';
 
 class ClinicModel {
   final String id;
@@ -19,23 +19,22 @@ class ClinicModel {
     this.imageUrl,
   });
 
-  factory ClinicModel.fromDocument(DocumentSnapshot doc) {
+  factory ClinicModel.fromMap(Map<String, Object?> map) {
     return ClinicModel(
-      id: doc.id,
-      name: doc['name'],
-      detail: doc['detail'],
-      phone: doc['phone'],
-      lat: doc['lat'],
-      lon: doc['lon'],
-      imageUrl: doc[
-          'imageUrl'], // This might need a null check depending on your data
+      id: map['id'].toString(),
+      name: map['name'] as String,
+      detail: map['detail'] as String,
+      phone: map['phone'] as String,
+      lat: map['lat'] as String,
+      lon: map['lon'] as String,
+      imageUrl: map['imageUrl'] as String?,
     );
   }
 }
 
 Future<List<ClinicModel>> getClinics() async {
-  final QuerySnapshot snapshot =
-      await FirebaseFirestore.instance.collection('Clinics').get();
+  final db = await DatabaseHelper.instance.database;
+  final rows = await db.query('Clinics');
 
-  return snapshot.docs.map((doc) => ClinicModel.fromDocument(doc)).toList();
+  return rows.map((row) => ClinicModel.fromMap(row)).toList();
 }

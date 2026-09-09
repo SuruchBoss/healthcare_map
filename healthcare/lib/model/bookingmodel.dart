@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:healthcare/db/database_helper.dart';
 
 class BookingModel {
   final DateTime dateTime;
@@ -9,12 +9,20 @@ class BookingModel {
     required this.clinicName,
   });
 
-  factory BookingModel.fromFirestore(DocumentSnapshot doc) {
+  factory BookingModel.fromMap(Map<String, Object?> map) {
     return BookingModel(
-      dateTime: (doc['dateTime'] as Timestamp).toDate(),
-      clinicName: doc['clinicName'],
+      dateTime: DateTime.fromMillisecondsSinceEpoch(map['dateTime'] as int),
+      clinicName: map['clinicName'] as String,
     );
   }
+}
+
+Future<void> addBooking(String clinicName, DateTime dateTime) async {
+  final db = await DatabaseHelper.instance.database;
+  await db.insert('Bookings', {
+    'clinicName': clinicName,
+    'dateTime': dateTime.millisecondsSinceEpoch,
+  });
 }
 
 Future<List<BookingModel>> getBookingsForSelectedDate(
@@ -24,13 +32,15 @@ Future<List<BookingModel>> getBookingsForSelectedDate(
   final endOfDay =
       DateTime(selectedDate.year, selectedDate.month, selectedDate.day + 1);
 
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('Bookings')
-      .where('dateTime', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-      .where('dateTime', isLessThan: Timestamp.fromDate(endOfDay))
-      .get();
+  final db = await DatabaseHelper.instance.database;
+  final rows = await db.query(
+    'Bookings',
+    where: 'dateTime >= ? AND dateTime < ?',
+    whereArgs: [
+      startOfDay.millisecondsSinceEpoch,
+      endOfDay.millisecondsSinceEpoch,
+    ],
+  );
 
-  return querySnapshot.docs
-      .map((doc) => BookingModel.fromFirestore(doc))
-      .toList();
+  return rows.map((row) => BookingModel.fromMap(row)).toList();
 }

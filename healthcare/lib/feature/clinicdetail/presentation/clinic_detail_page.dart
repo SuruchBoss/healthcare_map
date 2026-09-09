@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 
 class ClinicDetailPage extends StatefulWidget {
@@ -73,7 +74,7 @@ class _ClinicDetailPageState extends State<ClinicDetailPage> {
                       selectTime = selectedSlot!['time'];
 
                       Navigator.of(context).pop(true);
-                      _showDoneBooking(context, model);
+                      _bookSlot(context, model);
                     } else {}
                   },
                 ),
@@ -83,6 +84,18 @@ class _ClinicDetailPageState extends State<ClinicDetailPage> {
         );
       },
     );
+  }
+
+  Future<void> _bookSlot(BuildContext context, ClinicModel model) async {
+    final startHour = int.parse(selectTime.split('.').first);
+    final now = DateTime.now();
+    await addBooking(
+      model.name,
+      DateTime(now.year, now.month, now.day, startHour),
+    );
+    if (context.mounted) {
+      _showDoneBooking(context, model);
+    }
   }
 
   Future<void> _showDoneBooking(BuildContext context, ClinicModel model) {

@@ -1,7 +1,7 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, use_build_context_synchronously
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:healthcare/db/database_helper.dart';
 import 'package:healthcare/feature/dashboard/presentation/dashboard.dart';
 import 'package:healthcare/feature/register/presentation/registerpage.dart';
 import 'package:healthcare/model/customermodel.dart';
@@ -18,7 +18,6 @@ class _LandingPageState extends State<LandingPage> {
   final passwordController = TextEditingController();
 
   String error = '';
-  String documentId = '';
 
   void _goToRegister() {
     Navigator.push(
@@ -29,33 +28,32 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
-  Future<DocumentSnapshot?> findUserByUsername() async {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection("Customers")
-        .where("username", isEqualTo: userNameController.text)
-        .limit(1)
-        .get();
+  Future<Map<String, Object?>?> findUserByUsername() async {
+    final db = await DatabaseHelper.instance.database;
+    final rows = await db.query(
+      'Customers',
+      where: 'username = ?',
+      whereArgs: [userNameController.text],
+      limit: 1,
+    );
 
-    if (querySnapshot.docs.isNotEmpty) {
-      DocumentSnapshot userDoc = querySnapshot.docs.first;
-      documentId = userDoc.id;
-      return querySnapshot.docs.first;
+    if (rows.isNotEmpty) {
+      return rows.first;
     }
 
     return null;
   }
 
   void _handleLogin() async {
-    final userDoc = await findUserByUsername();
+    final userRow = await findUserByUsername();
 
-    if (userDoc != null) {
-      final userData = userDoc.data() as Map<String, dynamic>;
-      final storedPassword = userData['password'] as String;
-      final name = userData['name'] as String;
-      final lastName = userData['lastName'] as String;
+    if (userRow != null) {
+      final storedPassword = userRow['password'] as String;
+      final name = userRow['name'] as String;
+      final lastName = userRow['lastName'] as String;
 
       CustomerModel model = CustomerModel(
-        id: documentId,
+        id: userRow['id'].toString(),
         firstName: name,
         lastName: lastName,
       );

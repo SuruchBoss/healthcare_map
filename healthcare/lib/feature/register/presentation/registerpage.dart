@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:healthcare/db/database_helper.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -89,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _handleRegistration() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final db = await DatabaseHelper.instance.database;
 
     Map<String, dynamic> data = {
       "name": nameController.text,
@@ -99,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
       "password": passwordController.text,
     };
 
-    await firestore.collection("Customers").add(data);
+    await db.insert('Customers', data);
   }
 
   @override

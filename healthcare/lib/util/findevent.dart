@@ -1,19 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:healthcare/db/database_helper.dart';
 import 'package:healthcare/model/bookingmodel.dart';
 
 Future<DateTime?> findDateOfNearestUpcomingEvent() async {
   final now = DateTime.now();
-  final querySnapshot = await FirebaseFirestore.instance
-      .collection('Bookings')
-      .where('dateTime', isGreaterThan: Timestamp.fromDate(now))
-      .orderBy('dateTime')
-      .limit(1)
-      .get();
 
-  if (querySnapshot.docs.isEmpty) {
+  final db = await DatabaseHelper.instance.database;
+  final rows = await db.query(
+    'Bookings',
+    where: 'dateTime > ?',
+    whereArgs: [now.millisecondsSinceEpoch],
+    orderBy: 'dateTime ASC',
+    limit: 1,
+  );
+
+  if (rows.isEmpty) {
     return null; // No upcoming events
   }
 
-  final nearestBooking = BookingModel.fromFirestore(querySnapshot.docs.first);
+  final nearestBooking = BookingModel.fromMap(rows.first);
   return nearestBooking.dateTime;
 }
