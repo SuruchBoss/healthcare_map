@@ -5,6 +5,7 @@ import 'package:healthcare/db/database_helper.dart';
 import 'package:healthcare/feature/dashboard/presentation/dashboard.dart';
 import 'package:healthcare/feature/register/presentation/registerpage.dart';
 import 'package:healthcare/model/customermodel.dart';
+import 'package:healthcare/theme/app_theme.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -90,43 +91,45 @@ class _LandingPageState extends State<LandingPage> {
       resizeToAvoidBottomInset: false,
       body: Container(
         width: screenWidth,
-        color: Colors.white,
+        color: AppColors.background,
         padding: const EdgeInsets.only(
-          top: 50,
-          left: 40,
-          right: 40,
-          bottom: 30,
+          top: 56,
+          left: 24,
+          right: 24,
+          bottom: 32,
         ),
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _logo(),
-              const SizedBox(height: 20),
-              const Text(
-                "Login",
-                style: TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
+              const SizedBox(height: 24),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               SizedBox(
                 width: screenWidth,
                 child: TextField(
                   controller: userNameController,
                   keyboardType: TextInputType.name,
                   decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
                     labelText: 'user name',
                     hintText: 'admin',
                   ),
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 16,
               ),
               SizedBox(
                 width: screenWidth,
@@ -135,73 +138,56 @@ class _LandingPageState extends State<LandingPage> {
                   obscureText: true,
                   keyboardType: TextInputType.text,
                   decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
                     labelText: 'password',
                     hintText: 'admin',
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                error,
-                style: const TextStyle(color: Colors.red),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  TextButton(
-                    onPressed: () => _handleLogin(),
-                    style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(50, 30),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        alignment: Alignment.centerLeft),
-                    child: const Text(
-                      "Login",
-                      style: TextStyle(
-                        fontSize: 21,
-                        color: Colors.blueAccent,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+              if (error.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    error,
+                    style: const TextStyle(color: AppColors.error, fontSize: 13),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        userNameController.text = '';
-                        passwordController.text = '';
-                        error = '';
-                      });
-                    },
-                    style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(50, 30),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        alignment: Alignment.centerLeft),
-                    child: const Text(
-                      "Clear",
-                      style: TextStyle(
-                        fontSize: 21,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                ),
+              ],
+              const SizedBox(
+                height: 24,
+              ),
+              SizedBox(
+                width: screenWidth,
+                child: ElevatedButton(
+                  onPressed: () => _handleLogin(),
+                  child: const Text("Login"),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    userNameController.text = '';
+                    passwordController.text = '';
+                    error = '';
+                  });
+                },
+                child: const Text(
+                  "Clear",
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
                   ),
-                ],
+                ),
               ),
-              Divider(
-                height: 60,
-                thickness: 1,
-                color: Colors.blue[600],
-              ),
+              const Divider(height: 48),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Does not have account? "),
+                  const Text(
+                    "Does not have account? ",
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                   TextButton(
                     onPressed: () => _goToRegister(),
                     style: TextButton.styleFrom(
@@ -210,13 +196,17 @@ class _LandingPageState extends State<LandingPage> {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         alignment: Alignment.centerLeft),
                     child: const Text(
-                      "Register ",
+                      "Register",
                       style: TextStyle(
-                        color: Colors.blueAccent,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  const Text("Here")
+                  const Text(
+                    " Here",
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                 ],
               )
             ],

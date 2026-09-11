@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/db/database_helper.dart';
+import 'package:healthcare/theme/app_theme.dart';
 import 'package:sqflite/sqflite.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -31,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
           title: const Text(
             'Register Confirmation',
             style: TextStyle(
-              color: Colors.blue,
+              color: AppColors.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -71,7 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
           title: const Text(
             'Username already taken',
             style: TextStyle(
-              color: Colors.blue,
+              color: AppColors.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -98,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
           title: const Text(
             'Incomplete registration',
             style: TextStyle(
-              color: Colors.blue,
+              color: AppColors.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -153,7 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           Container(
             alignment: Alignment.center,
-            color: Colors.white,
+            color: AppColors.background,
             padding: const EdgeInsets.only(
               top: 40,
               left: 20,
@@ -165,40 +166,45 @@ class _RegisterPageState extends State<RegisterPage> {
               width: 400,
               height: 600,
               padding: const EdgeInsets.only(
-                top: 20,
-                left: 10,
-                right: 10,
-                bottom: 20,
+                top: 24,
+                left: 16,
+                right: 16,
+                bottom: 24,
               ),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.blueAccent, width: 3),
-                borderRadius: BorderRadius.circular(15),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.08),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   const Text(
                     "Register",
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blueGrey,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 24),
                   SizedBox(
                     width: 300,
                     child: TextField(
                       controller: userNameController,
                       keyboardType: TextInputType.name,
                       decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
                         labelText: 'User Name',
                         hintText: 'User Name',
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: 300,
                     child: TextField(
@@ -206,46 +212,44 @@ class _RegisterPageState extends State<RegisterPage> {
                       keyboardType: TextInputType.name,
                       obscureText: true,
                       decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
                         labelText: 'Password',
                         hintText: 'Password',
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: 300,
                     child: TextField(
                       controller: nameController,
                       keyboardType: TextInputType.name,
                       decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
                         labelText: 'First Name',
                         hintText: 'First Name',
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: 300,
                     child: TextField(
                       controller: lastNameController,
                       keyboardType: TextInputType.name,
                       decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
                         labelText: 'Last Name',
                         hintText: 'Last Name',
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
                         "Age: ",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       SizedBox(
@@ -261,67 +265,48 @@ class _RegisterPageState extends State<RegisterPage> {
                           items: ageItems,
                           underline: Container(
                             height: 2,
-                            color: Colors.deepPurpleAccent,
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 90),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          if (nameController.text.isNotEmpty &&
-                              lastNameController.text.isNotEmpty &&
-                              selectedAge != null &&
-                              userNameController.text.isNotEmpty &&
-                              passwordController.text.isNotEmpty) {
-                            _showRegisterDialog(context);
-                          } else {
-                            _showErrorDialog(context);
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(50, 30),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            alignment: Alignment.centerLeft),
-                        child: const Text(
-                          "Register",
-                          style: TextStyle(
-                            fontSize: 21,
-                            color: Colors.blueAccent,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                  const Spacer(),
+                  SizedBox(
+                    width: 300,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (nameController.text.isNotEmpty &&
+                            lastNameController.text.isNotEmpty &&
+                            selectedAge != null &&
+                            userNameController.text.isNotEmpty &&
+                            passwordController.text.isNotEmpty) {
+                          _showRegisterDialog(context);
+                        } else {
+                          _showErrorDialog(context);
+                        }
+                      },
+                      child: const Text("Register"),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        nameController.text = '';
+                        lastNameController.text = '';
+                        selectedAge = null;
+                        userNameController.text = '';
+                        passwordController.text = '';
+                      });
+                    },
+                    child: const Text(
+                      "Clear",
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
                       ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            nameController.text = '';
-                            lastNameController.text = '';
-                            selectedAge = null;
-                            userNameController.text = '';
-                            passwordController.text = '';
-                          });
-                        },
-                        style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(50, 30),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            alignment: Alignment.centerLeft),
-                        child: const Text(
-                          "Clear",
-                          style: TextStyle(
-                            fontSize: 21,
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -340,8 +325,8 @@ class _RegisterPageState extends State<RegisterPage> {
               },
               icon: const Icon(
                 Icons.arrow_back_ios,
-                color: Colors.black,
-                size: 30.0,
+                color: AppColors.textPrimary,
+                size: 24.0,
               ),
             ),
           )

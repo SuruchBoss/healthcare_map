@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
 import 'package:healthcare/model/promotionmodel.dart';
+import 'package:healthcare/theme/app_theme.dart';
 import 'package:healthcare/widget/skeleton_loader.dart';
 
 class ClinicPromotion extends StatelessWidget {
@@ -50,41 +51,42 @@ class ClinicPromotion extends StatelessWidget {
 
           return ListView.builder(
             shrinkWrap: true,
-            padding: const EdgeInsets.all(0),
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: promotions.length,
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
               final promotion = promotions[index];
 
-              return Center(
-                child: TextButton(
-                  onPressed: () =>
+              return Material(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () =>
                       _goToClinicDetailPage(context, promotion.clinicName),
-                  style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(50, 1),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      alignment: Alignment.centerLeft),
                   child: Container(
-                    margin: const EdgeInsets.only(
-                        top: 10, left: 10, right: 10, bottom: 10),
+                    margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
-                      color: Colors.blue[100],
-                      border: Border.all(color: Colors.blueAccent),
-                      borderRadius: BorderRadius.circular(7),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.border),
                     ),
                     child: Stack(
                       children: [
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.asset(
-                              promotion.imageUrl,
-                              width: 450,
-                              height: 150,
-                              fit: BoxFit.cover,
+                            Container(
+                              width: double.infinity,
+                              height: 140,
+                              color: AppColors.background,
+                              child: Image.asset(
+                                promotion.imageUrl,
+                                fit: BoxFit.contain,
+                              ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(16),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -93,17 +95,35 @@ class ClinicPromotion extends StatelessWidget {
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(promotion.description),
-                                  const SizedBox(height: 4),
                                   Text(
-                                    promotion.clinicName,
-                                    style: TextStyle(
-                                      color: Colors.blue[900],
-                                      fontStyle: FontStyle.italic,
+                                    promotion.description,
+                                    style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 13,
                                     ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.local_hospital_rounded,
+                                        size: 14,
+                                        color: AppColors.secondary,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        promotion.clinicName,
+                                        style: const TextStyle(
+                                          color: AppColors.secondary,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -111,13 +131,13 @@ class ClinicPromotion extends StatelessWidget {
                           ],
                         ),
                         Positioned(
-                          top: 8,
-                          right: 8,
+                          top: 12,
+                          right: 12,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.orange[700],
+                              color: AppColors.warning,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -125,6 +145,7 @@ class ClinicPromotion extends StatelessWidget {
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 12,
                               ),
                             ),
                           ),

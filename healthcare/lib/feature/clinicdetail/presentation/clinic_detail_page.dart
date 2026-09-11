@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/clinicmodel.dart';
+import 'package:healthcare/theme/app_theme.dart';
 import 'package:healthcare/util/datetime.dart';
 
 class ClinicDetailPage extends StatefulWidget {
@@ -172,22 +173,27 @@ class _ClinicDetailPageState extends State<ClinicDetailPage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: AppColors.surface,
       body: Stack(children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              widget.model.imageUrl!,
-              width: screenWidth,
-              height: 400,
-              fit: BoxFit.cover,
-            ),
-            Container(
+        SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: screenWidth,
+                height: 260,
+                color: AppColors.background,
+                child: Image.asset(
+                  widget.model.imageUrl!,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.only(
-                  top: 20,
+                  top: 24,
                   left: 20,
                   right: 20,
-                  bottom: 30,
+                  bottom: 24,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,78 +201,81 @@ class _ClinicDetailPageState extends State<ClinicDetailPage> {
                     Text(
                       widget.model.name,
                       style: const TextStyle(
-                        fontSize: 31,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.teal,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
                     Text(
                       widget.model.detail,
                       style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.teal,
+                        fontSize: 15,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 16),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.phone_android,
-                          color: Colors.green,
-                          size: 33.0,
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.secondarySoft,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.phone_rounded,
+                            color: AppColors.secondary,
+                            size: 18.0,
+                          ),
                         ),
+                        const SizedBox(width: 10),
                         Text(
                           widget.model.phone,
                           style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.teal,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 70),
-                    Align(
-                      alignment: Alignment.center,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(50, 1),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            alignment: Alignment.centerLeft),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
                         onPressed: () => showTimeSlotDialog(
                           context,
                           widget.model,
                         ),
-                        child: Text(
-                          "Check Booking",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.orange[700],
-                          ),
-                        ),
+                        icon: const Icon(Icons.calendar_month_rounded,
+                            size: 20),
+                        label: const Text("Check Booking"),
                       ),
-                    )
+                    ),
                   ],
-                )),
-          ],
-        ),
-        Container(
-          padding: const EdgeInsets.only(
-            top: 60,
-            left: 20,
-            right: 20,
-            bottom: 30,
+                ),
+              ),
+            ],
           ),
-          child: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-              size: 30.0,
+        ),
+        Positioned(
+          top: 56,
+          left: 20,
+          child: Material(
+            color: Colors.white,
+            shape: const CircleBorder(),
+            elevation: 2,
+            child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppColors.textPrimary,
+                size: 18.0,
+              ),
             ),
           ),
         ),

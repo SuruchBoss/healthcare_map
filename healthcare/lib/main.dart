@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/landingpage/presentation/landingpage.dart';
+import 'package:healthcare/theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,8 +13,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: LandingPage(),
+    return MaterialApp(
+      theme: AppTheme.theme,
+      home: const LandingPage(),
     );
   }
 }

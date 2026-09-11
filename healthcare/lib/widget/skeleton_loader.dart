@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthcare/theme/app_theme.dart';
 
 /// A plain grey placeholder box used to sketch out where content will
 /// appear while it's still loading, instead of a bare spinner.
@@ -19,10 +20,10 @@ class SkeletonBox extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      margin: const EdgeInsets.all(6),
+      margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: borderRadius ?? BorderRadius.circular(7),
+        color: AppColors.border,
+        borderRadius: borderRadius ?? BorderRadius.circular(12),
       ),
     );
   }
