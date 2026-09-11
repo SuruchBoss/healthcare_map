@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/clinicmodel.dart';
+import 'package:healthcare/theme/app_theme.dart';
 import 'package:healthcare/util/datetime.dart';
 import 'package:healthcare/util/distance.dart';
 import 'package:healthcare/widget/skeleton_loader.dart';
@@ -197,10 +198,10 @@ class _SearchListState extends State<SearchList> {
           final clinics = List<ClinicModel>.from(snapshot.data!);
 
           if (clinics.isEmpty) {
-            return Center(
+            return const Center(
               child: Text(
                 'No clinics found',
-                style: TextStyle(color: Colors.grey[600]),
+                style: TextStyle(color: AppColors.textSecondary),
               ),
             );
           }
@@ -220,7 +221,7 @@ class _SearchListState extends State<SearchList> {
 
           return ListView.builder(
             shrinkWrap: true,
-            padding: const EdgeInsets.all(0),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             itemCount: clinics.length,
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
@@ -229,75 +230,104 @@ class _SearchListState extends State<SearchList> {
                   ? '${calculateDistanceKm(userLat, userLon, double.parse(model.lat), double.parse(model.lon)).toStringAsFixed(1)} km away'
                   : null;
 
-              return Center(
-                child: TextButton(
-                  onPressed: () => _goToClinicDetailPage(
-                    context,
-                    model,
-                  ),
-                  style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(50, 1),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      alignment: Alignment.centerLeft),
+              return Material(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => _goToClinicDetailPage(context, model),
                   child: Container(
-                    margin: const EdgeInsets.only(
-                        top: 10, left: 10, right: 10, bottom: 10),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue[100],
-                      border: Border.all(color: Colors.blueAccent),
-                      borderRadius: BorderRadius.circular(7),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.border),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          flex: 4,
-                          child: Image.asset(
-                            model.imageUrl!,
-                            width: 150,
-                            height: 150,
-                            fit: BoxFit.cover,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 84,
+                            height: 84,
+                            color: AppColors.background,
+                            child: Image.asset(
+                              model.imageUrl!,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 12),
                         Expanded(
-                          flex: 6,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 model.name,
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.blue[900]),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
+                                ),
                               ),
-                              Text(model.detail),
-                              if (distanceText != null)
-                                Text(
-                                  distanceText,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[700],
+                              const SizedBox(height: 2),
+                              Text(
+                                model.detail,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              if (distanceText != null) ...[
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on_rounded,
+                                      size: 14,
+                                      color: AppColors.secondary,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      distanceText,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.secondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                              const SizedBox(height: 10),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: AppColors.primarySoft,
+                                    foregroundColor: AppColors.primary,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
                                   ),
-                                ),
-                              const SizedBox(height: 15),
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: const Size(50, 1),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    alignment: Alignment.centerLeft),
-                                onPressed: () => showTimeSlotDialog(
-                                  context,
-                                  model,
-                                ),
-                                child: Text(
-                                  "Check Booking",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Colors.orange[700],
+                                  onPressed: () => showTimeSlotDialog(
+                                    context,
+                                    model,
+                                  ),
+                                  child: const Text(
+                                    "Check Booking",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                    ),
                                   ),
                                 ),
                               ),

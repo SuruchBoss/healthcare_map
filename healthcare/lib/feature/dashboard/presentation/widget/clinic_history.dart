@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/feature/clinicdetail/presentation/clinic_detail_page.dart';
 import 'package:healthcare/model/clinicmodel.dart';
+import 'package:healthcare/theme/app_theme.dart';
 import 'package:healthcare/widget/skeleton_loader.dart';
 
 class ClinicHistory extends StatelessWidget {
@@ -43,41 +44,52 @@ class ClinicHistory extends StatelessWidget {
 
           return ListView.builder(
             scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: clinics.length,
             itemBuilder: (context, index) {
               final model = clinics[index];
 
-              return TextButton(
-                onPressed: () => _goToClinicDetailPage(
-                  context,
-                  model,
-                ),
-                style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(50, 1),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    alignment: Alignment.centerLeft),
-                child: Container(
-                  margin: const EdgeInsets.only(
-                    left: 10,
-                    right: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[100],
-                    border: Border.all(color: Colors.blueAccent),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        model.imageUrl!,
-                        width: 120,
-                        height: 40,
-                        fit: BoxFit.cover,
-                      ),
-                      const SizedBox(height: 20),
-                      Text(model.name),
-                    ],
+              return Material(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => _goToClinicDetailPage(context, model),
+                  child: Container(
+                    width: 120,
+                    margin: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            color: AppColors.background,
+                            height: 44,
+                            child: Image.asset(
+                              model.imageUrl!,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          model.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
