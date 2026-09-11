@@ -90,7 +90,7 @@ You can also just register a brand-new account from the login screen instead of 
 
 1. **Log in** with `admin` / `admin` (or register a new account).
 2. **Dashboard** — your member tier/points badge is tappable and shows your progress to the next tier; below that, your upcoming appointment, previously-booked clinics, and current promotions.
-3. Tap **"Clinic Near You"** → grant location access (or don't — it falls back to a default map center either way) → tap the search icon to see the clinic list, sorted by real distance from you.
+3. Tap **"Clinic Near You"** → grant location access (or don't — it falls back to a default map center either way) → the clinic list is right there, sorted by real distance from you.
 4. Tap a clinic → **"Check Booking"** → pick a date (today up to 60 days ahead) → pick a time slot. Slots someone else already booked at that clinic show as unavailable.
 5. Confirm the booking, then open **"My Booking"** from the dashboard — tap a date on the calendar to see that day's bookings, and tap the red ✕ to cancel one (with a confirmation prompt first).
 6. Back on the dashboard, notice the tier badge and "Previous clinic" list updated — they refresh whenever you come back from booking or cancelling something.
@@ -166,6 +166,10 @@ The booking flow has real constraints behind it, not just a form that always suc
 
 State management is plain `StatefulWidget` + `setState` throughout — no Provider/Riverpod/Bloc/GetX. For an app this size (a handful of screens, no cross-cutting shared state beyond "who's logged in," which is just passed down as a constructor argument) that's a deliberate, appropriately-sized choice rather than a gap.
 
+### Design system
+
+Every screen shares one small design system defined in `lib/theme/app_theme.dart` — `AppColors` (a trustworthy blue primary, a teal accent for positive/distance signals, a soft neutral page background so white cards read as distinct surfaces) and an `AppTheme.theme` wired into `MaterialApp`. Screens used to each pick their own color (a green dashboard header, a blue banner, teal clinic-detail text, an orange CTA, a red divider — no relationship between any of them); they now all pull from the same palette, and primary actions (Login, Register, Check Booking) are real filled buttons instead of colored text.
+
 ---
 
 ## 🏛 Architecture
@@ -214,6 +218,8 @@ healthcare_map/
     │   │   ├── distance.dart         # haversine distance calc
     │   │   ├── findevent.dart        # "nearest upcoming booking" query
     │   │   └── loyalty.dart          # tier/points calculation
+    │   ├── theme/
+    │   │   └── app_theme.dart        # AppColors + AppTheme — the app's one shared design system
     │   ├── widget/
     │   │   └── skeleton_loader.dart  # loading placeholders (used instead of bare spinners)
     │   └── feature/                  # one folder per screen
@@ -301,7 +307,7 @@ flutter run
 
 1. **ล็อกอิน** ด้วย `admin` / `admin` (หรือสมัครใหม่)
 2. **Dashboard** — ป้าย tier/แต้มสะสมกดได้ กดแล้วเห็นว่าต้องจองอีกกี่ครั้งถึงจะขึ้น tier ถัดไป ด้านล่างมีนัดหมายที่จะถึง, คลินิกที่เคยจอง, และโปรโมชั่นปัจจุบัน
-3. กด **"Clinic Near You"** → อนุญาตตำแหน่ง (หรือไม่อนุญาตก็ได้ แอปจะ fallback ไปจุดกลางเริ่มต้น) → กดไอคอนค้นหาเพื่อดูรายชื่อคลินิกเรียงตามระยะทางจริง
+3. กด **"Clinic Near You"** → อนุญาตตำแหน่ง (หรือไม่อนุญาตก็ได้ แอปจะ fallback ไปจุดกลางเริ่มต้น) → เห็นรายชื่อคลินิกเรียงตามระยะทางจริงทันที ไม่ต้องกดอะไรเพิ่ม
 4. แตะคลินิก → **"Check Booking"** → เลือกวันที่ (วันนี้ถึงล่วงหน้า 60 วัน) → เลือกช่วงเวลา ช่วงที่คนอื่นจองไปแล้วที่คลินิกนั้นจะขึ้นไม่ว่าง
 5. ยืนยันการจอง แล้วเปิด **"My Booking"** จาก dashboard — แตะวันบนปฏิทินเพื่อดูการจองวันนั้น แตะ ✕ สีแดงเพื่อยกเลิก (มี dialog ยืนยันก่อนเสมอ)
 6. กลับมาที่ dashboard จะเห็นป้าย tier กับ "Previous clinic" อัปเดตให้เอง — รีเฟรชทุกครั้งที่กลับมาจากหน้าจอง/ยกเลิก
@@ -328,6 +334,8 @@ flutter run
 ## 🛠 เทคโนโลยีที่ใช้
 
 ดูตารางเต็มในส่วนภาษาอังกฤษด้านบน — สรุปสั้นๆ: **Flutter** + **sqflite** (backend ทั้งหมด) + **google_maps_flutter** + **location** (GPS) + **table_calendar** + **intl** ไม่มี state management library ภายนอก ใช้ `StatefulWidget`/`setState` ธรรมดา ซึ่งเหมาะสมกับขนาดแอปนี้ (ไม่กี่หน้าจอ ไม่มี shared state ข้าม feature ที่ซับซ้อน)
+
+**Design system**: ทุกหน้าจอใช้ธีมสีเดียวกันจาก `lib/theme/app_theme.dart` (`AppColors` + `AppTheme`) — น้ำเงินเป็นสีหลัก (ความน่าเชื่อถือ, เหมาะกับแอปสุขภาพ), เขียวมิ้นท์เป็น accent (ระยะทาง/สัญญาณเชิงบวก), พื้นหลังเทาอ่อนให้การ์ดขาวเด่น เดิมแต่ละหน้าจอเลือกสีเอง (header เขียว, banner น้ำเงิน, ตัวอักษร clinic detail เขียว, ปุ่มส้ม, เส้นแบ่งแดง — ไม่มีความสัมพันธ์กันเลย) ตอนนี้ทุกที่ดึงจากพาเลตต์เดียวกัน และปุ่มหลัก (Login, Register, Check Booking) เป็นปุ่มจริงแทนข้อความสี
 
 ## ⚠️ ข้อจำกัดที่รู้อยู่แล้ว / สิ่งที่ทำต่อได้
 
