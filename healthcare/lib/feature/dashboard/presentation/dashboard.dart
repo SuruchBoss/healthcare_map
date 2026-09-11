@@ -7,6 +7,7 @@ import 'package:healthcare/feature/mybooking/presentation/mybookingpage.dart';
 import 'package:healthcare/feature/searchingpage/presentation/searchingpage.dart';
 import 'package:healthcare/model/bookingmodel.dart';
 import 'package:healthcare/model/customermodel.dart';
+import 'package:healthcare/theme/app_theme.dart';
 import 'package:healthcare/util/loyalty.dart';
 
 class DashBoard extends StatefulWidget {
@@ -105,12 +106,18 @@ class _DashBoardState extends State<DashBoard> {
               Container(
                   width: screenWidth,
                   padding: const EdgeInsets.only(
-                    top: 70,
-                    left: 15,
-                    right: 10,
-                    bottom: 20,
+                    top: 64,
+                    left: 24,
+                    right: 16,
+                    bottom: 24,
                   ),
-                  color: Colors.green,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(24),
+                      bottomRight: Radius.circular(24),
+                    ),
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -120,50 +127,55 @@ class _DashBoardState extends State<DashBoard> {
                             children: [
                               Text(
                                 "Hello, ${widget.customer.firstName} ${widget.customer.lastName}",
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.grey[850],
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 12),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const Icon(
-                                    Icons.star_border,
-                                    color: Colors.black,
-                                    size: 30.0,
+                                    Icons.star_rounded,
+                                    color: Colors.white,
+                                    size: 20.0,
                                   ),
-                                  Text(
+                                  const SizedBox(width: 4),
+                                  const Text(
                                     "Member level:",
                                     style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17,
-                                      color: Colors.grey[700],
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                      color: Colors.white,
                                     ),
                                   ),
+                                  const SizedBox(width: 6),
                                   FutureBuilder<int>(
                                     future: getBookingCount(_customerId),
                                     builder: (context, snapshot) {
                                       final loyalty = calculateLoyalty(
                                           snapshot.data ?? 0);
-                                      return TextButton(
-                                        style: TextButton.styleFrom(
-                                            padding: EdgeInsets.zero,
-                                            minimumSize: const Size(50, 1),
-                                            tapTargetSize: MaterialTapTargetSize
-                                                .shrinkWrap,
-                                            alignment: Alignment.centerLeft),
-                                        onPressed: () =>
+                                      return GestureDetector(
+                                        onTap: () =>
                                             _showLoyaltyDialog(context, loyalty),
-                                        child: Text(
-                                          loyalty.tier,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17,
-                                            color: Colors.blue[700],
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Text(
+                                            loyalty.tier,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                              color: AppColors.primary,
+                                            ),
                                           ),
                                         ),
                                       );
@@ -177,144 +189,147 @@ class _DashBoardState extends State<DashBoard> {
                           flex: 1,
                           child: IconButton(
                             onPressed: () => _logOut(),
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.logout_outlined,
-                              color: Colors.grey[900],
-                              size: 30.0,
+                              color: Colors.white,
+                              size: 26.0,
                             ),
                           ))
                     ],
                   )),
-              const SizedBox(height: 40),
-              TextButton(
-                onPressed: _goToSearchPage,
-                style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(50, 1),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    alignment: Alignment.centerLeft),
-                child: Container(
-                  width: screenWidth,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.2), BlendMode.dstATop),
-                      image: const AssetImage("assets/search_bg.png"),
-                      fit: BoxFit.cover,
+              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _DashboardActionCard(
+                        onTap: _goToSearchPage,
+                        backgroundImage: "assets/search_bg.png",
+                        color: AppColors.primary,
+                        icon: Icons.search_rounded,
+                        label: "Clinic Near You",
+                      ),
                     ),
-                    color: Colors.greenAccent,
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  padding: const EdgeInsets.only(
-                    top: 40,
-                    left: 20,
-                    right: 20,
-                    bottom: 40,
-                  ),
-                  margin: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                  ),
-                  child: Text(
-                    "Clinic Near You",
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.teal[900],
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _DashboardActionCard(
+                        onTap: _goToMyBookingPage,
+                        backgroundImage: "assets/booking_bg.png",
+                        color: AppColors.secondary,
+                        icon: Icons.calendar_month_rounded,
+                        label: "My Booking",
+                      ),
                     ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Upcoming appointment",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: _goToMyBookingPage,
-                style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(50, 1),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    alignment: Alignment.centerLeft),
-                child: Container(
-                  width: screenWidth,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.2), BlendMode.dstATop),
-                      image: const AssetImage("assets/booking_bg.png"),
-                      fit: BoxFit.cover,
-                    ),
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  padding: const EdgeInsets.only(
-                    top: 40,
-                    left: 20,
-                    right: 20,
-                    bottom: 40,
-                  ),
-                  margin: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                  ),
-                  child: Text(
-                    "My Booking",
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.teal[900],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                "Upcoming appointment",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[850],
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               UpcomingEventsWidget(customerId: _customerId),
-              const SizedBox(height: 30),
-              Text(
-                "Previous clinic",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[850],
-                  fontWeight: FontWeight.bold,
+              const SizedBox(height: 32),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Previous clinic",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               SizedBox(
                 width: screenWidth,
-                height: 100,
+                height: 130,
                 child: ClinicHistory(customerId: _customerId),
               ),
-              const SizedBox(height: 20),
-              Divider(
-                height: 30,
-                thickness: 1,
-                indent: 30,
-                endIndent: 30,
-                color: Colors.red[600],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Promotion",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[850],
-                  fontWeight: FontWeight.bold,
+              const SizedBox(height: 16),
+              const Divider(height: 32, thickness: 1, indent: 20, endIndent: 20),
+              const SizedBox(height: 8),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Promotion",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: screenWidth,
-                height: 400,
-                child: ClinicPromotion(customerId: _customerId),
-              ),
+              const SizedBox(height: 8),
+              ClinicPromotion(customerId: _customerId),
               const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashboardActionCard extends StatelessWidget {
+  final VoidCallback onTap;
+  final String backgroundImage;
+  final Color color;
+  final IconData icon;
+  final String label;
+
+  const _DashboardActionCard({
+    required this.onTap,
+    required this.backgroundImage,
+    required this.color,
+    required this.icon,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: 120,
+          padding: const EdgeInsets.all(16),
+          alignment: Alignment.bottomLeft,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            image: DecorationImage(
+              image: AssetImage(backgroundImage),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(color, BlendMode.multiply),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Icon(icon, color: Colors.white, size: 24),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
             ],
           ),
         ),

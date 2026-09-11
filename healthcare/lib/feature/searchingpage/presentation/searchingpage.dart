@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:healthcare/feature/searchingpage/presentation/widget/search_list.dart';
+import 'package:healthcare/theme/app_theme.dart';
 import 'package:location/location.dart';
 
 class SearchingPage extends StatefulWidget {
@@ -15,7 +16,7 @@ class SearchingPage extends StatefulWidget {
 }
 
 class _SearchingPageState extends State<SearchingPage> {
-  bool isShow = false;
+  bool isShow = true;
 
   GoogleMapController? mapController;
   Set<Marker> markers = {};
@@ -132,79 +133,88 @@ class _SearchingPageState extends State<SearchingPage> {
             Container(
               width: screenWidth,
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
                 ),
               ),
               padding: const EdgeInsets.only(
-                top: 40,
+                top: 20,
                 left: 20,
                 right: 20,
-                bottom: 40,
+                bottom: 24,
               ),
               margin: const EdgeInsets.only(
                 top: 250,
               ),
               child: SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          isShow = !isShow;
-                        });
-                      },
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.teal,
-                        size: isShow ? 30 : 80.0,
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.border,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                    Text(
-                      "Searh Nearby Clinic",
-                      style: TextStyle(
-                        fontSize: isShow ? 13 : 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: AppColors.primarySoft,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.search_rounded,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            "Search Nearby Clinic",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isShow = !isShow;
+                            });
+                          },
+                          icon: Icon(
+                            isShow
+                                ? Icons.expand_less_rounded
+                                : Icons.expand_more_rounded,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                     if (locationError != null)
                       Padding(
-                        padding: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           locationError!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.orange[800],
+                            color: AppColors.warning,
                           ),
                         ),
                       ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(50, 1),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            alignment: Alignment.centerLeft),
-                        onPressed: () {
-                          setState(() {
-                            isShow = false;
-                          });
-                        },
-                        child: Text(
-                          "Clear",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     isShow
                         ? SizedBox(
                             width: screenWidth,
@@ -220,21 +230,22 @@ class _SearchingPageState extends State<SearchingPage> {
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.only(
-                top: 60,
-                left: 20,
-                right: 20,
-                bottom: 30,
-              ),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                  size: 30.0,
+            Positioned(
+              top: 56,
+              left: 20,
+              child: Material(
+                color: Colors.white,
+                shape: const CircleBorder(),
+                elevation: 2,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.textPrimary,
+                    size: 18.0,
+                  ),
                 ),
               ),
             )
